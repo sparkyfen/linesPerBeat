@@ -1,0 +1,17 @@
+<div ng-include="'partials/navbar'"></div>
+<alert></alert>
+<div class="well well-small" ng-repeat="user in userList" ng-cloak>
+  <img ng-src="{{user.avatar}}" alt="User Avatar" class="userAvatar">
+  <h3>{{user.username}} <span ng-show="user.firstName">- {{user.firstName}}</span><span ng-show="user.lastName">{{user.lastName}}</span></h3>
+  <h5 ng-show="user.lastfm.currentSong.artist">
+    Current Song: <a ng-href="{{user.lastfm.currentSong.url}}" target="_blank">{{user.lastfm.currentSong.artist}} - {{user.lastfm.currentSong.song}}</a> <img src="images/icon_eq.gif" alt="Equalizer Icon">
+  </h5>
+  <h5 ng-show="user.lastfm.currentSong.artist">Last Updated: {{user.lastfm.currentSong.lastUpdated | date: 'medium'}}</h5>
+  <h5 ng-show="!user.lastfm.currentSong.artist">Current Song: N/A</h5>
+  <h5 ng-show="!user.lastfm.currentSong.artist">Last Updated: N/A</h5>
+  <h5>Lines Per Minute: {{user.linesPerMinute}}</h5>
+</div>
+<div class="well well-small" ng-show="!userList || userList.length === 0" ng-cloak>
+  <h1>No User's Registered! :(</h1>
+</div>
+<div ng-include="'partials/footer'"></div>

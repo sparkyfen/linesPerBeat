@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - 0.10
+before_script:
+  - npm install -g bower grunt-cli
+  - node install.js
+services:
+  - couchdb
+env:
+  global:
+    - NODE_ENV='test'

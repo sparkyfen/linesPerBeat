@@ -1,0 +1,10 @@
+<div 
+  ng-class="{'alert': true, 'alert-success': isAlertSuccess, 'alert-error': isAlertError, 'banner': true}"
+  ng-show="message"
+  ng-cloak>
+  <button type="button" class="close" data-dismiss="alert">
+    <i class="fa fa-times-circle"></i>
+  </button>
+  <i ng-class="{'ocon-white-success': isAlertSuccess, 'ocon-white-error': isAlertError}"></i>
+  {{message}}
+</div>

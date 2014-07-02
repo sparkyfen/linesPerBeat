@@ -1,0 +1,16 @@
+<div ng-include="'partials/navbar'"></div>
+<alert></alert>
+<div class="well well-large">
+  <form ng-submit="linkAccount()" class="form-horizontal" name="linkForm">
+    <legend>Link Last.FM Account <i class="fa fa-info-circle" data-animation="am-fade-and-scale" data-trigger="click" data-type="success" data-title="{{tooltip.title}}" bs-tooltip></i></legend>
+    <label>Username</label>
+    <input type="text" ng-model="lastfmUser" required autofocus>
+    <div class="control-group">
+      <div class="control">
+        <button type="submit" class="btn">Submit</button>
+      </div>
+    </div>
+  </form>
+  <span class="help-block">Don't have a Last.FM Account? Make one <a href="https://secure.last.fm/join" target="_blank">here.</a></span>
+</div>
+<div ng-include="'partials/footer'"></div>

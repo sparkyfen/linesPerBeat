@@ -1,0 +1,21 @@
+img.userAvatar {
+  width: 75px;
+  height: 75px;
+}
+img#gruntLogo {
+  width: 150px;
+  height: 150px;
+}
+/* Thanks https://github.com/csarsam */
+li:hover .submenu {
+    background: #fff;
+    border: 1px solid #b7b7b7;
+    display: block;
+    left: -0.5px;
+    top: 32.625px;
+    visibility: visible;
+}
+
+ul#std-profile .caret {
+    margin-left: -20px;
+}

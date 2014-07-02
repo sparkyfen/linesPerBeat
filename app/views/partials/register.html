@@ -1,0 +1,19 @@
+<div ng-include="'partials/navbar'"></div>
+<alert></alert>
+<div class="well well-large">
+	<form ng-submit="register()" class="form-horizontal" name="registerForm">
+		<legend>Register</legend>
+		<label>Username</label>
+		<input type="text" ng-model="username" required autofocus>
+		<label>Password</label>
+		<input type="password" ng-model="password" required>
+		<label>Confirm Password</label>
+		<input type="password" ng-model="confirmPassword" required>
+		<div class="control-group">
+			<div class="control">
+				<button type="submit" class="btn">Submit</button>
+			</div>
+		</div>
+	</form>
+</div>
+<div ng-include="'partials/footer'"></div>

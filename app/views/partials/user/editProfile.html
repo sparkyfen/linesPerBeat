@@ -1,0 +1,19 @@
+<div ng-include="'partials/navbar'"></div>
+<alert></alert>
+<div class="well well-large">
+  <form ng-submit="editProfile()" class="form-horizontal">
+    <legend>Edit Profile</legend>
+    <label>First Name</label>
+    <input type="text" ng-model="firstName" autofocus>
+    <label>Last Name</label>
+    <input type="text" ng-model="lastName">
+    <label>Last.FM Username</label>
+    <input type="text" ng-model="lastfmUser" required>
+    <div class="control-group">
+      <div class="control">
+        <button type="submit" class="btn">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+<div ng-include="'partials/footer'"></div>

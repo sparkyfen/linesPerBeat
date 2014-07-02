@@ -1,0 +1,25 @@
+<div ng-controller="NavbarCtrl">
+  <div class="pure-menu pure-menu-open pure-menu-horizontal">
+      <a href="#" class="pure-menu-heading">Lines~Per~Beat</a>
+      <ul id="std-menu-items">
+        <li ng-repeat="item in menu" ng-class="{'pure-menu-selected': isActive(item.link)}">
+          <a ng-href="{{item.link}}">{{item.title}}</a>
+        </li>
+        <!-- Link or button to toggle dropdown -->
+        <li ng-show="isLoggedIn">
+          <a id="drop1" role="button" class="dropdown-toggle" data-toggle="dropdown">{{username}}</a>
+          <ul class="submenu">
+              <li><a tabindex="-1" href="/user/editProfile">Edit Profile</a></li>
+              <li><a tabindex="-1" href="/user/changePassword">Change Password</a></li>
+              <li class="pure-menu-separator"></li>
+              <li><a ng-click="logout()">Logout</a></li>
+          </ul>
+        </li>
+        <li ng-show="!isLoggedIn">
+          <a ng-href="/login">Login</a>
+        </li>
+        <b class="caret"></b>
+      </ul>
+    </div>
+  </div>
+</div>

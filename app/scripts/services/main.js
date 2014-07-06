@@ -50,6 +50,9 @@ angular.module('linesPerBeatApp').service('UserService', ['$http', function ($ht
     },
     getParticipants: function() {
       return $http.get('/api/user/getParticipants');
+    },
+    checkCookie: function() {
+      return $http.get('/api/user/checkCookie');
     }
   };
 }]);

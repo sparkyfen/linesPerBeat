@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('linesPerBeatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute', 'ngAnimate']).config(function ($routeProvider, $locationProvider) {
+angular.module('linesPerBeatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute', 'ngAnimate', 'ngMaterial']).config(function ($routeProvider, $locationProvider) {
   $routeProvider
   .when('/', {
     templateUrl: 'partials/main',

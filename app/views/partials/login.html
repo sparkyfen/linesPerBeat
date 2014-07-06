@@ -1,17 +1,16 @@
-<div ng-include="'partials/navbar'"></div>
-<alert></alert>
-<div class="well well-large">
-	<form ng-submit="login()" class="form-horizontal" name="loginForm">
-		<legend>Login</legend>
-		<label>Username</label>
-		<input type="text" ng-model="username" required autofocus>
-		<label>Password</label>
-		<input type="password" ng-model="password" required>
-		<div class="control-group">
-			<div class="control">
-				<button type="submit" class="btn">Submit</button>
+<div>
+	<material-card>
+		<h2>Login</h2>
+		<form ng-submit="login()" class="form-horizontal loginForm" name="loginForm">
+			<div class="material-input-group material-input-group-theme-light">
+				<label>Username</label>
+				<input type="text" ng-model="username" required autofocus>
 			</div>
-		</div>
-	</form>
+			<div class="material-input-group material-input-group-theme-light">
+				<label>Password</label>
+				<input type="password" ng-model="password" required>
+			</div>
+			<button type="submit" class="material-button material-button-raised material-button-colored">Submit</button>
+		</form>
+	</material-card>
 </div>
-<div ng-include="'partials/footer'"></div>

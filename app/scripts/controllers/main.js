@@ -1,32 +1,45 @@
 'use strict';
 
-angular.module('linesPerBeatApp').controller('MainCtrl', ['$scope', 'UserService', function ($scope, UserService) {
+angular.module('linesPerBeatApp').controller('MainCtrl', ['$scope', 'UserService', '$materialToast', function ($scope, UserService, $materialToast) {
   UserService.getParticipants().success(function (userList) {
     $scope.userList = userList;
   }).error(function (error) {
-    $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+    $materialToast({
+      template: error.message,
+      duration: 2000,
+      position: 'left bottom'
+    });
   });
 }]);
 
-angular.module('linesPerBeatApp').controller('LoginCtrl', ['$scope', 'UserService', '$location', '$timeout', '$window', function ($scope, UserService, $location, $timeout, $window) {
+angular.module('linesPerBeatApp').controller('LoginCtrl', ['$scope', 'UserService', '$location', '$timeout', '$window', '$materialToast', '$rootScope', function ($scope, UserService, $location, $timeout, $window, $materialToast, $rootScope) {
   $scope.login = function() {
     var loginData = {
       username: $scope.username,
       password: $scope.password
     };
     UserService.login(loginData).success(function (loginResp) {
-      $scope.$emit('alert', {message: loginResp.message, isError: false, isSuccess: true});
       $window.localStorage.setItem('user', $scope.username);
+      $materialToast({
+        template: loginResp.message,
+        duration: 500,
+        position: 'left bottom'
+      });
+      $rootScope.isLoggedIn = true;
       $timeout(function () {
         $location.path('/');
       }, 500);
     }).error(function (error) {
-      $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
     });
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserService', '$location', '$timeout', '$window', function ($scope, UserService, $location, $timeout, $window) {
+angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserService', '$location', '$timeout', '$window', '$materialToast', function ($scope, UserService, $location, $timeout, $window, $materialToast) {
   $scope.register = function() {
     var registerData = {
       username: $scope.username,
@@ -34,31 +47,47 @@ angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserSer
       confirmPassword: $scope.confirmPassword
     };
     UserService.register(registerData).success(function (registerResp) {
-      $scope.$emit('alert', {message: registerResp.message, isError: false, isSuccess: true});
+      $materialToast({
+        template: registerResp.message,
+        duration: 500,
+        position: 'left bottom'
+      });
       $window.localStorage.setItem('user', $scope.username);
       $timeout(function () {
         $location.path('/linkLastFm');
       }, 500);
     }).error(function (error) {
-      $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
     });
   };
 }]);
 
 angular.module('linesPerBeatApp').controller('GruntFileCtrl', [function () {}]);
 
-angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserService', '$location', '$timeout', function ($scope, UserService, $location, $timeout) {
+angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserService', '$location', '$timeout', '$materialToast', function ($scope, UserService, $location, $timeout, $materialToast) {
   $scope.linkAccount = function() {
     var linkData = {
       lastfmUser: $scope.lastfmUser
     };
     UserService.linkAccount(linkData).success(function (linkResp) {
-      $scope.$emit('alert', {message: linkResp.message, isError: false, isSuccess: true});
+      $materialToast({
+        template: linkResp.message,
+        duration: 500,
+        position: 'left bottom'
+      });
       $timeout(function () {
         $location.path('/getGruntFile');
       }, 500);
     }).error(function (error) {
-      $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
     });
   };
   $scope.tooltip = {
@@ -66,13 +95,17 @@ angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserS
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'UserService', '$timeout', '$location', function ($scope, UserService, $timeout, $location) {
+angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'UserService', '$timeout', '$location', '$materialToast', function ($scope, UserService, $timeout, $location, $materialToast) {
   UserService.getProfile().success(function (profileResp) {
     $scope.firstName = profileResp.firstName;
     $scope.lastName = profileResp.lastName;
     $scope.lastfmUser = profileResp.lastfm.username;
   }).error(function (error) {
-    $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+    $materialToast({
+      template: error.message,
+      duration: 2000,
+      position: 'left bottom'
+    });
   });
   $scope.editProfile = function() {
     var profileData = {
@@ -81,17 +114,25 @@ angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'User
       lastfmUser: $scope.lastfmUser
     };
     UserService.updateProfile(profileData).success(function (profileResp) {
-      $scope.$emit('alert', {message: profileResp.message, isError: false, isSuccess: true});
+      $materialToast({
+        template: profileResp.message,
+        duration: 500,
+        position: 'left bottom'
+      });
       $timeout(function () {
         $location.path('/');
       }, 500);
     }).error(function (error) {
-      $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
     });
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'UserService', '$timeout', '$location', function ($scope, UserService, $timeout, $location) {
+angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'UserService', '$timeout', '$location', '$materialToast', function ($scope, UserService, $timeout, $location, $materialToast) {
   $scope.changePassword = function() {
     var passwordData = {
       oldPassword: $scope.oldPassword,
@@ -99,12 +140,20 @@ angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'U
       confirmNewPassword: $scope.confirmNewPassword
     };
     UserService.changePassword(passwordData).success(function (passwordResp) {
-      $scope.$emit('alert', {message: passwordResp.message, isError: false, isSuccess: true});
+      $materialToast({
+        template: passwordResp.message,
+        duration: 500,
+        position: 'left bottom'
+      });
       $timeout(function () {
         $location.path('/');
       }, 500);
     }).error(function (error) {
-      $scope.$emit('alert', {message: error.message, isError: true, isSuccess: false});
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
     });
   };
 }]);

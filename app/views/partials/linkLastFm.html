@@ -1,16 +1,13 @@
-<div ng-include="'partials/navbar'"></div>
-<alert></alert>
-<div class="well well-large">
-  <form ng-submit="linkAccount()" class="form-horizontal" name="linkForm">
-    <legend>Link Last.FM Account <i class="fa fa-info-circle" data-animation="am-fade-and-scale" data-trigger="click" data-type="success" data-title="{{tooltip.title}}" bs-tooltip></i></legend>
-    <label>Username</label>
-    <input type="text" ng-model="lastfmUser" required autofocus>
-    <div class="control-group">
-      <div class="control">
-        <button type="submit" class="btn">Submit</button>
+<div>
+  <material-card>
+    <h2>Link Last.FM Account <i class="fa fa-info-circle"></i></h2>
+    <form ng-submit="linkAccount()" class="form-horizontal linkForm" name="linkForm">
+      <div class="material-input-group material-input-group-theme-light">
+        <label>Username</label>
+        <input type="text" ng-model="lastfmUser" required autofocus>
       </div>
-    </div>
-  </form>
-  <span class="help-block">Don't have a Last.FM Account? Make one <a href="https://secure.last.fm/join" target="_blank">here.</a></span>
+      <button type="submit" class="material-button material-button-raised material-button-colored">Submit</button>
+    </form>
+    <span class="help-block">Don't have a Last.FM Account? Make one <a href="https://secure.last.fm/join" target="_blank">here</a>.</span>
+  </material-card>
 </div>
-<div ng-include="'partials/footer'"></div>

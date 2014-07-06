@@ -1,24 +1,15 @@
-/* global $ */
 'use strict';
 
-angular.module('linesPerBeatApp').directive('alert', ['$timeout', function ($timeout) {
+// This is a work around for elements that have their values populated by ng-model and the view for the input is as if there is no value.
+// TODO Need to finish getting this material focus directive working.
+angular.module('linesPerBeatApp').directive('materialFocus', [function(){
   return {
-    restrict: 'E',
-    replace: true,
-    templateUrl: 'partials/alert.html',
-    link: function(scope, element) {
-      scope.$on('alert', function (event, alertData) {
-        scope.isAlertSuccess = alertData.isSuccess;
-        scope.isAlertError = alertData.isError;
-        scope.message = alertData.message;
-        scope.$apply();
-        $(element).fadeIn('fast');
-        $timeout(function () {
-          $(element).fadeOut('slow', function () {
-            scope.message = null;
-          });
-        }, 3000);
-      });
+    restrict: 'A',
+    link: function($scope, element) {
+      element.addClass('material-input-focused');
+      element.removeClass('material-input-focused');
+      var e = angular.element.Event('keyup');
+      element.trigger(e);
     }
   };
 }]);

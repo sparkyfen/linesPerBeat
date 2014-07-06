@@ -9,30 +9,27 @@
     <base href="/">
     <title>Lines~Per~Beat</title>
     <meta name="description" content="Hackathon LeaderBoard">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <script src="bower_components/platform/platform.js"></script>
-    <link rel="import" href="bower_components/font-roboto/roboto.html">
-    <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">
-    <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
-    <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(app) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.min.css" />
-    <link rel="stylesheet" href="bower_components/pure/pure.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css({.tmp,app}) styles/main.css -->
+    <link rel="stylesheet" href="styles/lib/angular-material/material-design.min.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body ng-app="linesPerBeatApp" unresolved touch-action="auto">
+  <body ng-app="linesPerBeatApp">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-view=""></div>
+    <div ng-include="'partials/navbar'"></div>
+    <div class="container" ng-view="" class="tabs-view"></div>
+    <div ng-include="'partials/footer'"></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -60,8 +57,10 @@
     <script src="bower_components/angular-animate/angular-animate.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
-
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/lib/angular-material/angular-animate-sequence.js"></script>
+        <script src="scripts/lib/angular-material/angular-animate-stylers.js"></script>
+        <script src="scripts/lib/angular-material/material-design.js"></script>
         <script src="scripts/app.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/services/main.js"></script>

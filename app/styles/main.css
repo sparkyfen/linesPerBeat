@@ -1,21 +1,59 @@
-img.userAvatar {
-  width: 75px;
-  height: 75px;
+material-tab.brand material-tab-label {
+  color: #FFFFFF;
+  opacity: 6;
 }
+
+material-tab.brand {
+  width: 50%;
+}
+
+form.loginForm .material-input-group input,
+form.registerForm .material-input-group input,
+form.changePasswordForm .material-input-group input,
+form.editProfileForm .material-input-group input,
+form.linkForm .material-input-group input {
+  width: 75%;
+}
+
+.divider {
+  width: 1px;
+  background-color: #FFFFFF;
+}
+
+.help-block {
+  color: #999;
+  font-size: 0.8em;
+  display: inline-block;
+  padding-top: 1em;
+}
+
+.help-block a {
+  color: #4285f4;
+  text-decoration: none;
+}
+
+img.userAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 32px;
+}
+
 img#gruntLogo {
   width: 150px;
   height: 150px;
 }
+
 /* Thanks https://github.com/csarsam */
+
 li:hover .submenu {
-    background: #fff;
-    border: 1px solid #b7b7b7;
-    display: block;
-    left: -0.5px;
-    top: 32.625px;
-    visibility: visible;
+  background: #fff;
+  border: 1px solid #b7b7b7;
+  display: block;
+  left: -0.5px;
+  top: 32.625px;
+  visibility: visible;
 }
 
 ul#std-profile .caret {
-    margin-left: -20px;
+  margin-left: -20px;
 }

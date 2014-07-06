@@ -1,0 +1,20 @@
+'use strict';
+
+module.exports = {
+  env: 'test',
+  couchdb: {
+    url: 'http://localhost:5984',
+    users: 'linesperbeat-test-user'
+  },
+  crypto: {
+    salt: '' // 64+ character string.
+  },
+  cookie: {
+    secret: '' // 64+ character string.
+  },
+  lastfm: {
+    api_key: '', // Last.FM API Key.
+    secret: '', // Last.FM API Secret.
+    useragent: 'LinesPerBeat/v0.1' // Some string to represent the useragent.
+  }
+};

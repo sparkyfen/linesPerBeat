@@ -53,6 +53,19 @@ angular.module('linesPerBeatApp').service('UserService', ['$http', function ($ht
     },
     checkCookie: function() {
       return $http.get('/api/user/checkCookie');
+    },
+    uploadAvatar: function (uploadData) {
+       //By setting ‘Content-Type’: undefined, the browser sets the Content-Type to multipart/form-data for us and fills in the correct boundary. Manually setting ‘Content-Type’: multipart/form-data will fail to fill in the boundary parameter of the request.
+      var formData = new FormData();
+      formData.append('file', uploadData.file || null);
+      formData.append('url', uploadData.url || null);
+      return $http({
+        method: 'POST',
+        url: '/api/user/uploadAvatar',
+        data: formData,
+        headers: {'Content-Type': undefined},
+        transformRequest: angular.identity
+      });
     }
   };
 }]);

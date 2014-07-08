@@ -1,17 +1,13 @@
 <div ng-controller="NavbarCtrl">
   <material-tabs selected="selectedItem">
-    <div class="tabs-header">
-      <div class="tabs-header-items">
-        <material-tab label="{{brand.title}}" disabled="{{brand.disabled}}" on-select="brand.onSelect()" class="brand"></material-tab>
-        <div class="divider"></div>
-        <material-tab ng-repeat="item in menu" label="{{item.title}}" disabled="{{item.disabled}}" ng-show="item.show">
-          <div ng-show="item.submenu">
-            <material-tabs>
-              <material-tab ng-repeat="subItem in usermenu" label="{{subItem.title}}" disabled="{{subItem.disabled}}" ng-show="subItem.show" on-select="subItem.onSelect()">
-            </material-tabs>
-          </div>
-        </material-tab>
+    <material-tab label="{{brand.title}}" disabled="{{brand.disabled}}" on-select="brand.onSelect()" class="brand"></material-tab>
+    <div class="divider"></div>
+    <material-tab ng-repeat="item in menu" label="{{item.title}}" disabled="{{item.disabled}}" ng-show="item.show">
+      <div ng-show="item.submenu">
+        <material-tabs>
+          <material-tab ng-repeat="subItem in usermenu" label="{{subItem.title}}" disabled="{{subItem.disabled}}" ng-show="subItem.show" on-select="subItem.onSelect()">
+        </material-tabs>
       </div>
-    </div>
+    </material-tab>
   </material-tabs>
 </div>

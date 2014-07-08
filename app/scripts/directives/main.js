@@ -1,15 +1,18 @@
 'use strict';
 
-// This is a work around for elements that have their values populated by ng-model and the view for the input is as if there is no value.
-// TODO Need to finish getting this material focus directive working.
-angular.module('linesPerBeatApp').directive('materialFocus', [function(){
+/*http://jsfiddle.net/JeJenny/ZG9re/*/
+angular.module('linesPerBeatApp').directive('fileModel', ['$parse', function ($parse) {
   return {
     restrict: 'A',
-    link: function($scope, element) {
-      element.addClass('material-input-focused');
-      element.removeClass('material-input-focused');
-      var e = angular.element.Event('keyup');
-      element.trigger(e);
+    link: function(scope, element, attrs) {
+      var model = $parse(attrs.fileModel);
+      var modelSetter = model.assign;
+
+      element.bind('change', function(){
+        scope.$apply(function(){
+          modelSetter(scope, element[0].files[0]);
+        });
+      });
     }
   };
 }]);

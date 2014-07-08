@@ -259,6 +259,9 @@ material-content {
   overflow-y: auto;
   overflow-x: hidden; }
 
+material-toolbar ~ material-content {
+  top: 60px; }
+
 material-icon {
   position: relative;
   display: inline-block;
@@ -860,6 +863,8 @@ material-toolbar {
   padding: 0 10px; }
   .material-toolbar-tools > * {
     margin: 0 8px; }
+  .material-toolbar-tools .material-button {
+    font-size: 16px; }
 
 .material-toolbar-tools-bottom {
   position: absolute;

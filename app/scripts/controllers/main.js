@@ -68,7 +68,7 @@ angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserSer
 
 angular.module('linesPerBeatApp').controller('GruntFileCtrl', [function () {}]);
 
-angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserService', '$location', '$timeout', '$materialToast', function ($scope, UserService, $location, $timeout, $materialToast) {
+angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserService', '$location', '$timeout', '$materialToast', '$window', function ($scope, UserService, $location, $timeout, $materialToast, $window) {
   $scope.linkAccount = function() {
     var linkData = {
       lastfmUser: $scope.lastfmUser
@@ -82,12 +82,16 @@ angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserS
       $timeout(function () {
         $location.path('/getGruntFile');
       }, 500);
-    }).error(function (error) {
+    }).error(function (error, statusCode) {
       $materialToast({
         template: error.message,
         duration: 2000,
         position: 'left bottom'
       });
+      if(statusCode === 401) {
+        $window.localStorage.clear();
+        $location.path('/');
+      }
     });
   };
   $scope.tooltip = {
@@ -95,18 +99,54 @@ angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserS
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'UserService', '$timeout', '$location', '$materialToast', function ($scope, UserService, $timeout, $location, $materialToast) {
+angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'UserService', '$timeout', '$location', '$materialToast', '$window', '$route', function ($scope, UserService, $timeout, $location, $materialToast, $window, $route) {
   UserService.getProfile().success(function (profileResp) {
     $scope.firstName = profileResp.firstName;
     $scope.lastName = profileResp.lastName;
     $scope.lastfmUser = profileResp.lastfm.username;
-  }).error(function (error) {
+  }).error(function (error, statusCode) {
     $materialToast({
       template: error.message,
       duration: 2000,
       position: 'left bottom'
     });
+    if(statusCode === 401) {
+      $window.localStorage.clear();
+      $location.path('/');
+    }
   });
+  $scope.selectedAvatar = 1;
+  $scope.show = function(type) {
+    if(type === 'upload') {
+      $scope.showUpload = true;
+    } else {
+      $scope.showUpload = false;
+    }
+  };
+  $scope.upload = function() {
+    var uploadData = {
+      file: $scope.avatarFile,
+      url: $scope.url
+    };
+    UserService.uploadAvatar(uploadData).success(function (uploadResp) {
+      $materialToast({
+        template: uploadResp.message,
+        duration: 500,
+        position: 'left bottom'
+      });
+      $route.reload();
+    }).error(function (error, statusCode) {
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
+      if(statusCode === 401) {
+        $window.localStorage.clear();
+        $location.path('/');
+      }
+    });
+  };
   $scope.editProfile = function() {
     var profileData = {
       firstName: $scope.firstName,
@@ -119,20 +159,32 @@ angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'User
         duration: 500,
         position: 'left bottom'
       });
-      $timeout(function () {
-        $location.path('/');
-      }, 500);
-    }).error(function (error) {
+    }).error(function (error, statusCode) {
       $materialToast({
         template: error.message,
         duration: 2000,
         position: 'left bottom'
       });
+      if(statusCode === 401) {
+        $window.localStorage.clear();
+        $location.path('/');
+      }
     });
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'UserService', '$timeout', '$location', '$materialToast', function ($scope, UserService, $timeout, $location, $materialToast) {
+angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'UserService', '$timeout', '$location', '$materialToast', '$window', function ($scope, UserService, $timeout, $location, $materialToast, $window) {
+  UserService.checkCookie().error(function (error, statusCode) {
+    $materialToast({
+      template: error.message,
+      duration: 2000,
+      position: 'left bottom'
+    });
+    if(statusCode === 401) {
+      $window.localStorage.clear();
+      $location.path('/');
+    }
+  });
   $scope.changePassword = function() {
     var passwordData = {
       oldPassword: $scope.oldPassword,
@@ -146,14 +198,20 @@ angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'U
         position: 'left bottom'
       });
       $timeout(function () {
+        // Clear user out of localstorage.
+        $window.localStorage.clear();
         $location.path('/');
       }, 500);
-    }).error(function (error) {
+    }).error(function (error, statusCode) {
       $materialToast({
         template: error.message,
         duration: 2000,
         position: 'left bottom'
       });
+      if(statusCode === 401) {
+        $window.localStorage.clear();
+        $location.path('/');
+      }
     });
   };
 }]);

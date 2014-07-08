@@ -12,7 +12,9 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     link: '/',
     show: true,
     disabled: false,
-    submenu: false
+    onSelect: function() {
+      $location.path(this.link);
+    }
   };
   $scope.menu = [{
     title: 'Home',

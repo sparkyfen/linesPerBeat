@@ -2,19 +2,39 @@
   <material-card>
     <h2>Edit Profile</h2>
     <form ng-submit="editProfile()" class="form-horizontal editProfileForm">
-    <div class="material-input-group material-input-group-theme-light">
-      <label>First Name</label>
-      <input type="text" ng-model="firstName" autofocus>
-    </div>
-    <div class="material-input-group material-input-group-theme-light">
-      <label>Last Name</label>
-      <input type="text" ng-model="lastName">
-    </div>
-    <div class="material-input-group material-input-group-theme-light">
-      <label>Last.FM Username</label>
-      <input type="text" ng-model="lastfmUser" required>
-    </div>
-    <button type="submit" class="material-button material-button-raised material-button-colored">Submit</button>
+      <div class="material-input-group material-input-group-theme-light">
+        <label>First Name</label>
+        <input type="text" ng-model="firstName" autofocus>
+      </div>
+      <div class="material-input-group material-input-group-theme-light">
+        <label>Last Name</label>
+        <input type="text" ng-model="lastName">
+      </div>
+      <div class="material-input-group material-input-group-theme-light">
+        <label>Last.FM Username</label>
+        <input type="text" ng-model="lastfmUser" required>
+      </div>
+      <button type="submit" class="material-button material-button-raised material-button-colored">Submit</button>
+    </form>
+  </material-card>
+  <material-card>
+    <h2>Edit Avatar</h2>
+    <material-tabs selected="selectedAvatar" class="transparent-light">
+      <material-tab label="Upload" disabled="false" on-select="show('upload')"></material-tab>
+      <material-tab label="URL" disabled="false" on-select="show('url')"></material-tab>
+    </material-tabs>
+    <form class="form-horizontal uploadForm" enctype="multipart/form-data" ng-show="showUpload">
+      <div class="material-input-group material-input-group-theme-light">
+        <input type="file" file-model="avatarFile" required>
+      </div>
+      <button type="submit" class="material-button material-button-raised material-button-colored" ng-click="upload()">Upload</button>
+    </form>
+    <form class="form-horizontal uploadForm" ng-show="!showUpload">
+      <div class="material-input-group material-input-group-theme-light">
+        <label>URL</label>
+        <input type="text" ng-model="url" required>
+      </div>
+      <button type="submit" class="material-button material-button-raised material-button-colored" ng-click="upload()">Submit</button>
     </form>
   </material-card>
 </div>

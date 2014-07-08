@@ -4,676 +4,6 @@
  */
 (function(){
 angular.module('ngMaterial', [ 'ng', 'ngAnimate', 'material.services', "material.components.button","material.components.card","material.components.checkbox","material.components.content","material.components.dialog","material.components.form","material.components.icon","material.components.list","material.components.radioButton","material.components.scrollHeader","material.components.sidenav","material.components.slider","material.components.tabs","material.components.toast","material.components.toolbar","material.components.whiteframe"]);
-angular.module('material.services', [
-  'material.services.registry'
-]);
-
-/**
- * @ngdoc overview
- * @name material.services.registry
- *
- * @description
- * A component registry system for accessing various component instances in an app.
- */
-angular.module('material.services.registry', [])
-  .factory('$materialComponentRegistry', [ '$log', materialComponentRegistry ]);
-
-/**
- * @ngdoc service
- * @name material.services.registry.service:$materialComponentRegistry
- *
- * @description
- * $materialComponentRegistry enables the user to interact with multiple instances of
- * certain complex components in a running app.
- */
-function materialComponentRegistry($log) {
-  var instances = [];
-
-  return {
-    /**
-     * Used to print an error when an instance for a handle isn't found.
-     */
-    notFoundError: function(handle) {
-      $log.error('No instance found for handle', handle);
-    },
-    /**
-     * Return all registered instances as an array.
-     */
-    getInstances: function() {
-      return instances;
-    },
-
-    /**
-     * Get a registered instance.
-     * @param handle the String handle to look up for a registered instance.
-     */
-    get: function(handle) {
-      var i, j, instance;
-      for(i = 0, j = instances.length; i < j; i++) {
-        instance = instances[i];
-        if(instance.$$materialHandle === handle) {
-          return instance;
-        }
-      }
-      return null;
-    },
-
-    /**
-     * Register an instance.
-     * @param instance the instance to register
-     * @param handle the handle to identify the instance under.
-     */
-    register: function(instance, handle) {
-      instance.$$materialHandle = handle;
-      instances.push(instance);
-
-      return function deregister() {
-        var index = instances.indexOf(instance);
-        if (index !== -1) {
-          instances.splice(index, 1);
-        }
-      };
-    },
-  }
-}
-
-
-angular.module('material.utils', [ ])
-  .factory('$attrBind', [ '$parse', '$interpolate', AttrsBinder ]);
-
-/**
- *  This service allows directives to easily databind attributes to private scope properties.
- *
- * @private
- */
-function AttrsBinder($parse, $interpolate) {
-  var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
-
-  return function (scope, attrs, bindDefinition, bindDefaults) {
-    angular.forEach(bindDefinition || {}, function (definition, scopeName) {
-      //Adapted from angular.js $compile
-      var match = definition.match(LOCAL_REGEXP) || [],
-        attrName = match[3] || scopeName,
-        mode = match[1], // @, =, or &
-        parentGet,
-        unWatchFn;
-
-      switch (mode) {
-        case '@':   // One-way binding from attribute into scope
-
-          attrs.$observe(attrName, function (value) {
-            scope[scopeName] = value;
-          });
-          attrs.$$observers[attrName].$$scope = scope;
-
-          if (!bypassWithDefaults(attrName, scopeName)) {
-            // we trigger an interpolation to ensure
-            // the value is there for use immediately
-            scope[scopeName] = $interpolate(attrs[attrName])(scope);
-          }
-          break;
-
-        case '=':   // Two-way binding...
-
-          if (!bypassWithDefaults(attrName, scopeName)) {
-            // Immediate evaluation
-            scope[scopeName] = scope.$eval(attrs[attrName]);
-
-            // Data-bind attribute to scope (incoming) and
-            // auto-release watcher when scope is destroyed
-
-            unWatchFn = scope.$watch(attrs[attrName], function (value) {
-              scope[scopeName] = value;
-            });
-            scope.$on('$destroy', unWatchFn);
-          }
-
-          break;
-
-        case '&':   // execute an attribute-defined expression in the context of the parent scope
-
-          if (!bypassWithDefaults(attrName, scopeName, angular.noop)) {
-            /* jshint -W044 */
-            if (attrs[attrName] && attrs[attrName].match(RegExp(scopeName + '\(.*?\)'))) {
-              throw new Error('& expression binding "' + scopeName + '" looks like it will recursively call "' +
-                attrs[attrName] + '" and cause a stack overflow! Please choose a different scopeName.');
-            }
-
-            parentGet = $parse(attrs[attrName]);
-            scope[scopeName] = function (locals) {
-              return parentGet(scope, locals);
-            };
-          }
-
-          break;
-      }
-    });
-
-    /**
-     * Optional fallback value if attribute is not specified on element
-     * @param scopeName
-     */
-    function bypassWithDefaults(attrName, scopeName, defaultVal) {
-      if (!angular.isDefined(attrs[attrName])) {
-        var hasDefault = bindDefaults && bindDefaults.hasOwnProperty(scopeName);
-        scope[scopeName] = hasDefault ? bindDefaults[scopeName] : defaultVal;
-        return true;
-      }
-      return false;
-    }
-
-  };
-}
-
-angular.module('material.utils')
-  .service('$iterator', IteratorFactory);
-
-/**
- * $iterator Service Class
- */
-
-function IteratorFactory() {
-
-  return function (items, loop) {
-    return new List(items, loop);
-  };
-
-  /**
-   * List facade to easily support iteration and accessors
-   * @param items Array list which this iterator will enumerate
-   * @param loop Boolean enables iterator to consider the list as an endless loop
-   * @constructor
-   */
-  function List(items, loop) {
-    loop = !!loop;
-
-    var _items = items || [ ];
-
-    // Published API
-
-    return {
-
-      items: getItems,
-      count: count,
-
-      hasNext: hasNext,
-      inRange: inRange,
-      contains: contains,
-      indexOf: indexOf,
-      itemAt: itemAt,
-      findBy: findBy,
-
-      add: add,
-      remove: remove,
-
-      first: first,
-      last: last,
-      next: next,
-      previous: previous
-
-    };
-
-    /**
-     * Publish copy of the enumerable set
-     * @returns {Array|*}
-     */
-    function getItems() {
-      return [].concat(_items);
-    }
-
-    /**
-     * Determine length of the list
-     * @returns {Array.length|*|number}
-     */
-    function count() {
-      return _items.length;
-    }
-
-    /**
-     * Is the index specified valid
-     * @param index
-     * @returns {Array.length|*|number|boolean}
-     */
-    function inRange(index) {
-      return _items.length && ( index > -1 ) && (index < _items.length );
-    }
-
-    /**
-     * Can the iterator proceed to the next item in the list; relative to
-     * the specified item.
-     *
-     * @param tab
-     * @returns {Array.length|*|number|boolean}
-     */
-    function hasNext(tab) {
-      return tab ? inRange(indexOf(tab) + 1) : false;
-    }
-
-    /**
-     * Get item at specified index/position
-     * @param index
-     * @returns {*}
-     */
-    function itemAt(index) {
-      return inRange(index) ? _items[index] : null;
-    }
-
-    /**
-     * Find all elements matching the key/value pair
-     * otherwise return null
-     *
-     * @param val
-     * @param key
-     *
-     * @return array
-     */
-    function findBy(key, val) {
-
-      /**
-       * Implement of e6 Array::find()
-       * @param list
-       * @param callback
-       * @returns {*}
-       */
-      function find(list, callback) {
-        var results = [ ];
-
-        angular.forEach(list, function (it, index) {
-          var val = callback.apply(null, [it, index, list]);
-          if (val) {
-            results.push(val);
-          }
-        });
-
-        return results.length ? results : undefined;
-      }
-
-      // Use iterator callback to matches element key value
-      // NOTE: searches full prototype chain
-
-      return find(_items, function (el) {
-        return ( el[key] == val ) ? el : null;
-      });
-
-    }
-
-    /**
-     * Add item to list
-     * @param it
-     * @param index
-     * @returns {*}
-     */
-    function add(it, index) {
-      if (!angular.isDefined(index)) {
-        index = _items.length;
-      }
-
-      _items.splice(index, 0, it);
-
-      return indexOf(it);
-    }
-
-    /**
-     * Remove it from list...
-     * @param it
-     */
-    function remove(it) {
-      _items.splice(indexOf(it), 1);
-    }
-
-    /**
-     * Get the zero-based index of the target tab
-     * @param it
-     * @returns {*}
-     */
-    function indexOf(it) {
-      return _items.indexOf(it);
-    }
-
-    /**
-     * Boolean existence check
-     * @param it
-     * @returns {boolean}
-     */
-    function contains(it) {
-      return it && (indexOf(it) > -1);
-    }
-
-    /**
-     * Find the next item
-     * @param tab
-     * @returns {*}
-     */
-    function next(it, validate) {
-
-      if (contains(it)) {
-        var index = indexOf(it) + 1,
-          found = inRange(index) ? _items[ index ] :
-            loop ? first() : null,
-          skip = found && validate && !validate(found);
-
-        return skip ? next(found) : found;
-      }
-
-      return null;
-    }
-
-    /**
-     * Find the previous item
-     * @param tab
-     * @returns {*}
-     */
-    function previous(it, validate) {
-
-      if (contains(it)) {
-        var index = indexOf(it) - 1,
-          found = inRange(index) ? _items[ index ] :
-            loop ? last() : null,
-          skip = found && validate && !validate(found);
-
-        return skip ? previous(found) : found;
-      }
-
-      return null;
-    }
-
-    /**
-     * Return first item in the list
-     * @returns {*}
-     */
-    function first() {
-      return _items.length ? _items[0] : null;
-    }
-
-    /**
-     * Return last item in the list...
-     * @returns {*}
-     */
-    function last() {
-      return _items.length ? _items[_items.length - 1] : null;
-    }
-
-  }
-
-}
-
-
-
-
-/**
- * @author      Thomas Burleson
- * @date        November, 2013
- * @description
- *
- *  String supplant global utility (similar to but more powerful than sprintf() ).
- *
- *  Usages:
- *
- *      var user = {
- *              first : "Thomas",
- *              last  : "Burleson",
- *              address : {
- *                  city : "West Des Moines",
- *                  state: "Iowa"
- *              },
- *              contact : {
- *                  email : "ThomasBurleson@Gmail.com"
- *                  url   : "http://www.solutionOptimist.com"
- *              }
- *          },
- *          message = "Hello Mr. {first} {last}. How's life in {address.city}, {address.state} ?";
- *
- *     return supplant( message, user );
- *
- */
-(function( window ) {
-    "use strict";
-        var INVALID_DATA = "Undefined template provided";
-
-        // supplant() method from Crockfords `Remedial Javascript`
-
-        var supplant =  function( template, values, pattern ) {
-            if(!template)
-            {
-              throw(new Error(INVALID_DATA));
-            }
-
-            pattern = pattern || /\{([^\{\}]*)\}/g;
-
-            return template.replace(pattern, function(a, b) {
-                var p = b.split('.'),
-                    r = values;
-
-                try {
-                    for (var s in p) { r = r[p[s]];  }
-                } catch(e){
-                    r = a;
-                }
-
-                return (typeof r === 'string' || typeof r === 'number' || typeof r === 'boolean') ? r : a;
-            });
-        };
-
-
-        // supplant() method from Crockfords `Remedial Javascript`
-        Function.prototype.method = function (name, func) {
-            this.prototype[name] = func;
-            return this;
-        };
-
-        String.method("supplant", function( values, pattern ) {
-            var self = this;
-            return supplant(self, values, pattern);
-        });
-
-
-        // Publish this global function...
-        window.supplant = String.supplant = supplant;
-
-}( window ));
-
-angular.module('material.services.compiler', [])
-  .service('$materialCompiler', [
-    '$q',
-    '$http',
-    '$injector',
-    '$compile',
-    '$controller',
-    '$templateCache',
-    materialCompilerService
-  ]);
-
-function materialCompilerService($q, $http, $injector, $compile, $controller, $templateCache) {
-
-  /**
-   * @ngdoc service
-   * @name $materialCompiler
-   * @module material.services.compiler
-   *
-   * @description
-   * The $materialCompiler service is an abstraction of angular's compiler, that allows the developer
-   * to easily compile an element with a templateUrl, controller, and locals.
-   */
-
-   /**
-    * @ngdoc method
-    * @name $materialCompiler#compile
-    * @param {object} options An options object, with the following properties:
-    *
-    *    - `controller` â€“ `{(string=|function()=}` â€“ Controller fn that should be associated with
-    *      newly created scope or the name of a {@link angular.Module#controller registered
-    *      controller} if passed as a string.
-    *    - `controllerAs` â€“ `{string=}` â€“ A controller alias name. If present the controller will be
-    *      published to scope under the `controllerAs` name.
-    *    - `template` â€“ `{string=}` â€“ html template as a string or a function that
-    *      returns an html template as a string which should be used by {@link
-    *      ngRoute.directive:ngView ngView} or {@link ng.directive:ngInclude ngInclude} directives.
-    *      This property takes precedence over `templateUrl`.
-    *
-    *    - `templateUrl` â€“ `{string=}` â€“ path or function that returns a path to an html
-    *      template that should be used by {@link ngRoute.directive:ngView ngView}.
-    *
-    *    - `transformTemplate` â€“ `{function=} â€“ a function which can be used to transform
-    *      the templateUrl or template provided after it is fetched.  It will be given one
-    *      parameter, the template, and should return a transformed template.
-    *
-    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
-    *      be injected into the controller. If any of these dependencies are promises, the compiler
-    *      will wait for them all to be resolved or one to be rejected before the controller is
-    *      instantiated.
-    *
-    *      - `key` â€“ `{string}`: a name of a dependency to be injected into the controller.
-    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
-    *        Otherwise if function, then it is {@link api/AUTO.$injector#invoke injected}
-    *        and the return value is treated as the dependency. If the result is a promise, it is
-    *        resolved before its value is injected into the controller.
-    *
-    * @returns {object=} promise A promsie which will be resolved with a `compileData` object,
-    * with the following properties:
-    *
-    *   - `{element}` â€“ `element` â€“ an uncompiled angular element compiled using the provided template.
-    *   
-    *   - `{function(scope)}`  â€“ `link` â€“ A link function, which, when called, will compile
-    *     the elmeent and instantiate options.controller.
-    *
-    *   - `{object}` â€“ `locals` â€“ The locals which will be passed into the controller once `link` is
-    *     called.
-    *
-    * @usage
-    * $materialCompiler.compile({
-    *   templateUrl: 'modal.html',
-    *   controller: 'ModalCtrl',
-    *   locals: {
-    *     modal: myModalInstance;
-    *   }
-    * }).then(function(compileData) {
-    *   compileData.element; // modal.html's template in an element
-    *   compileData.link(myScope); //attach controller & scope to element
-    * });
-    */
-  this.compile = function(options) {
-    var templateUrl = options.templateUrl;
-    var template = options.template || '';
-    var controller = options.controller;
-    var controllerAs = options.controllerAs;
-    var resolve = options.resolve || {};
-    var locals = options.locals || {};
-    var transformTemplate = options.transformTemplate || angular.identity;
-
-    // Take resolve values and invoke them.  
-    // Resolves can either be a string (value: 'MyRegisteredAngularConst'),
-    // or an invokable 'factory' of sorts: (value: function ValueGetter($dependency) {})
-    angular.forEach(resolve, function(value, key) {
-      if (angular.isString(value)) {
-        resolve[key] = $injector.get(value);
-      } else {
-        resolve[key] = $injector.invoke(value);
-      }
-    });
-    //Add the locals, which are just straight values to inject
-    //eg locals: { three: 3 }, will inject three into the controller
-    angular.extend(resolve, locals);
-
-    if (templateUrl) {
-      resolve.$template = $http.get(templateUrl, {cache: $templateCache})
-        .then(function(response) {
-          return response.data;
-        });
-    } else {
-      resolve.$template = $q.when(template);
-    }
-
-    // Wait for all the resolves to finish if they are promises
-    return $q.all(resolve).then(function(locals) {
-
-      var template = transformTemplate(locals.$template);
-      var element = angular.element('<div>').html(template).contents();
-      var linkFn = $compile(element);
-
-      //Return a linking function that can be used later whne the element is ready
-      return {
-        locals: locals,
-        element: element,
-        link: function link(scope) {
-          locals.$scope = scope;
-
-          //Instantiate controller if it exists, because we have scope
-          if (controller) {
-            var ctrl = $controller(controller, locals);
-            //See angular-route source for this logic
-            element.data('$ngControllerController', ctrl);
-            element.children().data('$ngControllerController', ctrl);
-
-            if (controllerAs) {
-              scope[controllerAs] = ctrl;
-            }
-          }
-
-          return linkFn(scope);
-        }
-      };
-    });
-  };
-}
-
-angular.module('material.services.popup', ['material.services.compiler'])
-
-  .factory('$materialPopup', [
-    '$materialCompiler',
-    '$timeout',
-    '$document',
-    '$animate',
-    '$rootScope',
-    '$rootElement',
-    QpPopupFactory
-  ]);
-
-function QpPopupFactory($materialCompiler, $timeout, $document, $animate, $rootScope, $rootElement) {
-
-  return createPopup;
-
-  function createPopup(options) {
-    var appendTo = options.appendTo || $rootElement;
-    var scope = (options.scope || $rootScope).$new();
-
-    return $materialCompiler.compile(options).then(function(compileData) {
-      var self;
-
-      return self = angular.extend({
-        enter: enter,
-        leave: leave,
-        destroy: destroy,
-        scope: scope
-      }, compileData);
-
-      function enter(done) {
-        if (scope.$$destroyed || self.entered) return (done || angular.noop)();
-
-        self.entered = true;
-        var after = appendTo[0].lastElementChild;
-        $animate.enter(self.element, appendTo, after && angular.element(after), done);
-
-        //On the first enter, compile the element
-        if (!self.compiled) {
-          compileData.link(scope);
-          self.compiled = true;
-        }
-      }
-      function leave(done) {
-        self.entered = false;
-        $animate.leave(self.element, done);
-      }
-      function destroy(done) {
-        if (scope.$$destroyed) return (done || angular.noop)();
-        self.leave(function() {
-          scope.$destroy();
-          (done || angular.noop)();
-        });
-      }
-    });
-  }
-}
-
 angular.module('material.animations', ['ngAnimateStylers', 'ngAnimateSequence', 'ngAnimate'])
 
   .service('materialEffects', ['$animateSequence', 'canvasRenderer', function ($animateSequence, canvasRenderer) {
@@ -919,6 +249,505 @@ angular.module('material.animations', ['ngAnimateStylers', 'ngAnimateSequence', 
 
   }]);
 
+angular.module('material.animations')
+    /**
+     * Port of the Polymer Paper-Ripple code
+     *
+     * @group Paper Elements
+     * @element paper-ripple
+     * @homepage github.io
+     */
+      .service('canvasRenderer', function() {
+
+           var pow = Math.pow;
+           var now = Date.now;
+           var Rippler = RipplerClazz();
+
+           if (window.performance && performance.now) {
+             now = performance.now.bind(performance);
+           }
+
+           angular.mixin = function (dst) {
+             angular.forEach(arguments, function(obj) {
+               if (obj !== dst) {
+                 angular.forEach(obj, function(value, key) {
+                   // Only mixin if destination value is undefined
+                   if ( angular.isUndefined(dst[key]) )
+                   {
+                    dst[key] = value;
+                   }
+                 });
+               }
+             });
+             return dst;
+           };
+
+
+
+    return {
+
+             /**
+              * API to render ripple animations
+              */
+             ripple : function( canvas, options)
+             {
+               var animator = new Rippler( canvas,  options );
+
+               // Simple API to start and finish ripples based on mouse/touch events
+               return {
+                 onMouseDown : angular.bind(animator, animator.onMouseDown),
+                 onMouseUp : angular.bind(animator, animator.onMouseUp)
+               };
+             }
+
+           };
+
+          // **********************************************************
+          // Rippler Class
+          // **********************************************************
+
+          function RipplerClazz() {
+
+            /**
+             *  Rippler creates a `paper-ripple` which is a visual effect that other quantum paper elements can
+             *  use to simulate a rippling effect emanating from the point of contact.  The
+             *  effect can be visualized as a concentric circle with motion.
+             */
+            function Rippler( canvas, options ) {
+
+
+              var defaults = {
+                /**
+                 * The initial opacity set on the wave.
+                 *
+                 * @attribute initialOpacity
+                 * @type number
+                 * @default 0.25
+                 */
+                initialOpacity : 0.25,
+
+                /**
+                 * How fast (opacity per second) the wave fades out.
+                 *
+                 * @attribute opacityDecayVelocity
+                 * @type number
+                 * @default 0.8
+                 */
+                opacityDecayVelocity : 0.8,
+
+                /**
+                 *
+                 */
+                backgroundFill : true,
+
+                /**
+                 *
+                 */
+                pixelDensity : 1
+              };
+
+
+
+              this.canvas = canvas;
+              this.waves  = [];
+
+              return angular.extend(this, angular.mixin(options, defaults));
+            };
+
+            /**
+             *
+             */
+            Rippler.prototype.onMouseDown = function ( startAt ) {
+
+              var canvas = this.setupCanvas( this.canvas );
+              var wave = createWave(this.canvas);
+
+              var width = canvas.width / this.pixelDensity; // Retina canvas
+              var height = canvas.height / this.pixelDensity;
+
+              // Auto center ripple if startAt is not defined...
+              startAt = startAt || { x : Math.round(width/2), y:Math.round(height/2) };
+
+              wave.isMouseDown = true;
+              wave.tDown = 0.0;
+              wave.tUp = 0.0;
+              wave.mouseUpStart = 0.0;
+              wave.mouseDownStart = now();
+              wave.startPosition = startAt;
+              wave.containerSize = Math.max(width, height);
+              wave.maxRadius = distanceFromPointToFurthestCorner(wave.startPosition, {w: width, h: height});
+
+              if (this.canvas.classList.contains("recenteringTouch")) {
+                  wave.endPosition = {x: width / 2,  y: height / 2};
+                  wave.slideDistance = dist(wave.startPosition, wave.endPosition);
+              }
+
+              this.waves.push(wave);
+
+              this.cancelled = false;
+
+              requestAnimationFrame(this._loop);
+            };
+
+            /**
+             *
+             */
+            Rippler.prototype.onMouseUp = function () {
+              for (var i = 0; i < this.waves.length; i++) {
+                // Declare the next wave that has mouse down to be mouse'ed up.
+                var wave = this.waves[i];
+                if (wave.isMouseDown) {
+                  wave.isMouseDown = false
+                  wave.mouseUpStart = now();
+                  wave.mouseDownStart = 0;
+                  wave.tUp = 0.0;
+                  break;
+                }
+              }
+              this._loop && requestAnimationFrame(this._loop);
+            };
+
+            /**
+             *
+             */
+            Rippler.prototype.cancel = function () {
+              this.cancelled = true;
+              return this;
+            };
+
+            /**
+             *
+             */
+            Rippler.prototype.animate = function (ctx) {
+              // Clear the canvas
+              ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+              var deleteTheseWaves = [];
+              // The oldest wave's touch down duration
+              var longestTouchDownDuration = 0;
+              var longestTouchUpDuration = 0;
+              // Save the last known wave color
+              var lastWaveColor = null;
+              // wave animation values
+              var anim = {
+                initialOpacity: this.initialOpacity,
+                opacityDecayVelocity: this.opacityDecayVelocity,
+                height: ctx.canvas.height,
+                width: ctx.canvas.width
+              }
+
+              for (var i = 0; i < this.waves.length; i++) {
+                var wave = this.waves[i];
+
+                if (wave.mouseDownStart > 0) {
+                  wave.tDown = now() - wave.mouseDownStart;
+                }
+                if (wave.mouseUpStart > 0) {
+                  wave.tUp = now() - wave.mouseUpStart;
+                }
+
+                // Determine how long the touch has been up or down.
+                var tUp = wave.tUp;
+                var tDown = wave.tDown;
+                longestTouchDownDuration = Math.max(longestTouchDownDuration, tDown);
+                longestTouchUpDuration = Math.max(longestTouchUpDuration, tUp);
+
+                // Obtain the instantenous size and alpha of the ripple.
+                var radius = waveRadiusFn(tDown, tUp, anim);
+                var waveAlpha =  waveOpacityFn(tDown, tUp, anim);
+                var waveColor = cssColorWithAlpha(wave.waveColor, waveAlpha);
+                lastWaveColor = wave.waveColor;
+
+                // Position of the ripple.
+                var x = wave.startPosition.x;
+                var y = wave.startPosition.y;
+
+                // Ripple gravitational pull to the center of the canvas.
+                if (wave.endPosition) {
+
+                  var translateFraction = waveGravityToCenterPercentageFn(tDown, tUp, wave.maxRadius);
+
+                  // This translates from the origin to the center of the view  based on the max dimension of
+                  var translateFraction = Math.min(1, radius / wave.containerSize * 2 / Math.sqrt(2) );
+
+                  x += translateFraction * (wave.endPosition.x - wave.startPosition.x);
+                  y += translateFraction * (wave.endPosition.y - wave.startPosition.y);
+                }
+
+                // If we do a background fill fade too, work out the correct color.
+                var bgFillColor = null;
+                if (this.backgroundFill) {
+                  var bgFillAlpha = waveOuterOpacityFn(tDown, tUp, anim);
+                  bgFillColor = cssColorWithAlpha(wave.waveColor, bgFillAlpha);
+                }
+
+                // Draw the ripple.
+                drawRipple(ctx, x, y, radius, waveColor, bgFillColor);
+
+                // Determine whether there is any more rendering to be done.
+                var maximumWave = waveAtMaximum(wave, radius, anim);
+                var waveDissipated = waveDidFinish(wave, radius, anim);
+                var shouldKeepWave = !waveDissipated || maximumWave;
+                var shouldRenderWaveAgain = !waveDissipated && !maximumWave;
+
+                if (!shouldKeepWave || this.cancelled) {
+                  deleteTheseWaves.push(wave);
+                }
+              }
+
+              if (shouldRenderWaveAgain) {
+                requestAnimationFrame(this._loop);
+              }
+
+              for (var i = 0; i < deleteTheseWaves.length; ++i) {
+                var wave = deleteTheseWaves[i];
+                removeWaveFromScope(this, wave);
+              }
+
+              if (!this.waves.length) {
+                // If there is nothing to draw, clear any drawn waves now because
+                // we're not going to get another requestAnimationFrame any more.
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                this._loop = null;
+              }
+
+              return this;
+            };
+
+
+            Rippler.prototype.adjustBounds = function( canvas )
+            {
+              // Default to parent container to define bounds
+              var self = this,
+                src = canvas.parentNode.getBoundingClientRect(),  // read-only
+                bounds = { width : src.width, height: src.height };
+
+              angular.forEach("width height".split(" "), function( style ) {
+                var value = (self[style] != "auto") ? self[style] : undefined;
+
+                // Allow CSS to explicitly define bounds (instead of parent container
+                if ( angular.isDefined(value ) ) {
+                  bounds[style] = sanitizePosition( value );
+                  canvas.setAttribute(style, bounds[style] * self.pixelDensity + "px");
+                }
+
+              });
+
+              // NOTE: Modified from polymer implementation
+              canvas.setAttribute('width', bounds.width * this.pixelDensity + "px");
+              canvas.setAttribute('height', bounds.height * this.pixelDensity + "px");
+
+
+                function sanitizePosition( style )
+                {
+                  var val = style.replace('px','');
+                  return val;
+                }
+
+              return canvas;
+            }
+
+
+            /**
+             * Resize the canvas to fill the parent's dimensions...
+             */
+            Rippler.prototype.setupCanvas = function ( canvas ) {
+
+              var ctx = this.adjustBounds(canvas).getContext('2d');
+              ctx.scale(this.pixelDensity, this.pixelDensity);
+              
+              if (!this._loop) {
+                this._loop = this.animate.bind(this, ctx);
+              }
+              return canvas;
+            };
+
+
+            return Rippler;
+
+          };
+
+
+
+
+          // **********************************************************
+          // Private Wave Methods
+          // **********************************************************
+
+
+
+          /**
+           *
+           */
+          function waveRadiusFn(touchDownMs, touchUpMs, anim) {
+            // Convert from ms to s.
+            var waveMaxRadius = 150;
+            var touchDown = touchDownMs / 1000;
+            var touchUp = touchUpMs / 1000;
+            var totalElapsed = touchDown + touchUp;
+            var ww = anim.width, hh = anim.height;
+            // use diagonal size of container to avoid floating point math sadness
+            var waveRadius = Math.min(Math.sqrt(ww * ww + hh * hh), waveMaxRadius) * 1.1 + 5;
+            var duration = 1.1 - .2 * (waveRadius / waveMaxRadius);
+            var tt = (totalElapsed / duration);
+
+            var size = waveRadius * (1 - Math.pow(80, -tt));
+            return Math.abs(size);
+          }
+
+          /**
+           *
+           */
+          function waveOpacityFn(td, tu, anim) {
+            // Convert from ms to s.
+            var touchDown = td / 1000;
+            var touchUp = tu / 1000;
+            var totalElapsed = touchDown + touchUp;
+
+            if (tu <= 0) {  // before touch up
+              return anim.initialOpacity;
+            }
+            return Math.max(0, anim.initialOpacity - touchUp * anim.opacityDecayVelocity);
+          }
+
+          /**
+           *
+           */
+          function waveOuterOpacityFn(td, tu, anim) {
+            // Convert from ms to s.
+            var touchDown = td / 1000;
+            var touchUp = tu / 1000;
+
+            // Linear increase in background opacity, capped at the opacity
+            // of the wavefront (waveOpacity).
+            var outerOpacity = touchDown * 0.3;
+            var waveOpacity = waveOpacityFn(td, tu, anim);
+            return Math.max(0, Math.min(outerOpacity, waveOpacity));
+          }
+
+          /**
+           *
+           */
+          function waveGravityToCenterPercentageFn(td, tu, r) {
+            // Convert from ms to s.
+            var touchDown = td / 1000;
+            var touchUp = tu / 1000;
+            var totalElapsed = touchDown + touchUp;
+
+            return Math.min(1.0, touchUp * 6);
+          }
+
+          /**
+           * Determines whether the wave should be completely removed.
+           */
+          function waveDidFinish(wave, radius, anim) {
+            var waveMaxRadius = 150;
+            var waveOpacity = waveOpacityFn(wave.tDown, wave.tUp, anim);
+            // If the wave opacity is 0 and the radius exceeds the bounds
+            // of the element, then this is finished.
+            if (waveOpacity < 0.01 && radius >= Math.min(wave.maxRadius, waveMaxRadius)) {
+              return true;
+            }
+            return false;
+          };
+
+          /**
+           *
+           */
+          function waveAtMaximum(wave, radius, anim) {
+            var waveMaxRadius = 150;
+            var waveOpacity = waveOpacityFn(wave.tDown, wave.tUp, anim);
+            if (waveOpacity >= anim.initialOpacity && radius >= Math.min(wave.maxRadius, waveMaxRadius)) {
+              return true;
+            }
+            return false;
+          }
+
+          /**
+           *
+           */
+          function createWave(elem) {
+            var elementStyle = window.getComputedStyle(elem);
+
+            var wave = {
+              waveColor: elementStyle.color,
+              maxRadius: 0,
+              isMouseDown: false,
+              mouseDownStart: 0.0,
+              mouseUpStart: 0.0,
+              tDown: 0,
+              tUp: 0
+            };
+            return wave;
+          }
+
+          /**
+           *
+           */
+          function removeWaveFromScope(scope, wave) {
+            if (scope.waves) {
+              var pos = scope.waves.indexOf(wave);
+              scope.waves.splice(pos, 1);
+            }
+          };
+
+          /**
+           *
+           */
+          function drawRipple(ctx, x, y, radius, innerColor, outerColor) {
+            if (outerColor) {
+              ctx.fillStyle = outerColor || 'rgba(252, 252, 158, 1.0)';
+              ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
+            }
+            ctx.beginPath();
+
+            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = innerColor || 'rgba(252, 252, 158, 1.0)';
+            ctx.fill();
+
+            //ctx.closePath();
+          }
+
+
+          /**
+           *
+           */
+          function cssColorWithAlpha(cssColor, alpha) {
+            var parts = cssColor ? cssColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/) : null;
+            if (typeof alpha == 'undefined') {
+              alpha = 1;
+            }
+            if (!parts) {
+              return 'rgba(255, 255, 255, ' + alpha + ')';
+            }
+            return 'rgba(' + parts[1] + ', ' + parts[2] + ', ' + parts[3] + ', ' + alpha + ')';
+          }
+
+          /**
+           *
+           */
+          function dist(p1, p2) {
+            return Math.sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+          }
+
+          /**
+           *
+           */
+          function distanceFromPointToFurthestCorner(point, size) {
+            var tl_d = dist(point, {x: 0, y: 0});
+            var tr_d = dist(point, {x: size.w, y: 0});
+            var bl_d = dist(point, {x: 0, y: size.h});
+            var br_d = dist(point, {x: size.w, y: size.h});
+            return Math.max(tl_d, tr_d, bl_d, br_d);
+          }
+
+        });
+
+
+
+
+
+
 /**
  * @ngdoc overview
  * @name material.components.button
@@ -1052,8 +881,8 @@ function materialContentService($materialComponentRegistry) {
     if(!instance) {
       $materialComponentRegistry.notFoundError(handle);
     }
-    return instance
-  }
+    return instance;
+  };
 }
 
 
@@ -1069,9 +898,6 @@ function materialContentDirective() {
 }
 
 angular.module('material.components.dialog', ['material.services.popup'])
-  .directive('materialDialog', [
-    NgmDialogDirective
-  ])
   /**
    * @ngdoc service
    * @name $materialDialog
@@ -1083,14 +909,6 @@ angular.module('material.components.dialog', ['material.services.popup'])
     '$rootElement',
     NgmDialogService
   ]);
-
-function NgmDialogDirective() {
-  return {
-    restrict: 'E',
-    transclude: true,
-    template: '<div class="dialog-container ng-transclude"></div>'
-  };
-}
 
 function NgmDialogService($timeout, $materialPopup, $rootElement) {
   var recentDialog;
@@ -1123,13 +941,20 @@ function NgmDialogService($timeout, $materialPopup, $rootElement) {
       dialog.locals.$hideDialog = destroyDialog;
       dialog.enter(function() {
         dialog.element.on('click', onElementClick);
+        $rootElement.on('keyup', onRootElementKeyup);
       });
 
       return destroyDialog;
 
       function destroyDialog() {
         dialog.element.off('click', onElementClick);
+        $rootElement.off('keyup', onRootElementKeyup);
         dialog.destroy();
+      }
+      function onRootElementKeyup(e) {
+        if (e.keyCode == 27) {
+          $timeout(destroyDialog);
+        }
       }
       function onElementClick(e) {
         //Close the dialog if click was outside the container
@@ -1156,6 +981,18 @@ function materialInputGroupDirective() {
       if(!input) { return; }
 
       input = angular.element(input);
+      var ngModelCtrl = input.controller('ngModel');
+
+      // When the input value changes, check if it "has" a value, and 
+      // set the appropriate class on the input group
+      if (ngModelCtrl) {
+        $scope.$watch(
+          function() { return ngModelCtrl.$viewValue; },
+          onInputChange
+        );
+      }
+      input.on('input', onInputChange);
+
       // When the input focuses, add the focused class to the group
       input.on('focus', function(e) {
         $element.addClass('material-input-focused');
@@ -1165,17 +1002,11 @@ function materialInputGroupDirective() {
         $element.removeClass('material-input-focused');
       });
 
-      // When the input value changes, check if it "has" a value, and 
-      // set the appropriate class on the input group
-      input.on('keyup change', function(e) {
-        if(input.val()) {
-          $element.addClass('material-input-has-value');
-        } else {
-          $element.removeClass('material-input-has-value');
-        }
-      });
+      function onInputChange() {
+        $element.toggleClass('material-input-has-value', !!input.val());
+      }
     }
-  }
+  };
 }
 
 angular.module('material.components.icon', [])
@@ -2523,944 +2354,674 @@ function materialToolbarDirective() {
 
 angular.module('material.components.whiteframe', []);
 
-angular.module('material.animations')
+angular.module('material.services', [
+  'material.services.registry'
+]);
+
+/**
+ * @ngdoc overview
+ * @name material.services.registry
+ *
+ * @description
+ * A component registry system for accessing various component instances in an app.
+ */
+angular.module('material.services.registry', [])
+  .factory('$materialComponentRegistry', [ '$log', materialComponentRegistry ]);
+
+/**
+ * @ngdoc service
+ * @name material.services.registry.service:$materialComponentRegistry
+ *
+ * @description
+ * $materialComponentRegistry enables the user to interact with multiple instances of
+ * certain complex components in a running app.
+ */
+function materialComponentRegistry($log) {
+  var instances = [];
+
+  return {
     /**
-     * Port of the Polymer Paper-Ripple code
-     *
-     * @group Paper Elements
-     * @element paper-ripple
-     * @homepage github.io
+     * Used to print an error when an instance for a handle isn't found.
      */
-      .service('canvasRenderer', function() {
+    notFoundError: function(handle) {
+      $log.error('No instance found for handle', handle);
+    },
+    /**
+     * Return all registered instances as an array.
+     */
+    getInstances: function() {
+      return instances;
+    },
 
-           var pow = Math.pow;
-           var now = Date.now;
-           var Rippler = RipplerClazz();
+    /**
+     * Get a registered instance.
+     * @param handle the String handle to look up for a registered instance.
+     */
+    get: function(handle) {
+      var i, j, instance;
+      for(i = 0, j = instances.length; i < j; i++) {
+        instance = instances[i];
+        if(instance.$$materialHandle === handle) {
+          return instance;
+        }
+      }
+      return null;
+    },
 
-           if (window.performance && performance.now) {
-             now = performance.now.bind(performance);
-           }
+    /**
+     * Register an instance.
+     * @param instance the instance to register
+     * @param handle the handle to identify the instance under.
+     */
+    register: function(instance, handle) {
+      instance.$$materialHandle = handle;
+      instances.push(instance);
 
-           angular.mixin = function (dst) {
-             angular.forEach(arguments, function(obj) {
-               if (obj !== dst) {
-                 angular.forEach(obj, function(value, key) {
-                   // Only mixin if destination value is undefined
-                   if ( angular.isUndefined(dst[key]) )
-                   {
-                    dst[key] = value;
-                   }
-                 });
-               }
-             });
-             return dst;
-           };
+      return function deregister() {
+        var index = instances.indexOf(instance);
+        if (index !== -1) {
+          instances.splice(index, 1);
+        }
+      };
+    },
+  }
+}
 
 
+angular.module('material.services.compiler', [])
+  .service('$materialCompiler', [
+    '$q',
+    '$http',
+    '$injector',
+    '$compile',
+    '$controller',
+    '$templateCache',
+    materialCompilerService
+  ]);
+
+function materialCompilerService($q, $http, $injector, $compile, $controller, $templateCache) {
+
+  /**
+   * @ngdoc service
+   * @name $materialCompiler
+   * @module material.services.compiler
+   *
+   * @description
+   * The $materialCompiler service is an abstraction of angular's compiler, that allows the developer
+   * to easily compile an element with a templateUrl, controller, and locals.
+   */
+
+   /**
+    * @ngdoc method
+    * @name $materialCompiler#compile
+    * @param {object} options An options object, with the following properties:
+    *
+    *    - `controller` â€“ `{(string=|function()=}` â€“ Controller fn that should be associated with
+    *      newly created scope or the name of a {@link angular.Module#controller registered
+    *      controller} if passed as a string.
+    *    - `controllerAs` â€“ `{string=}` â€“ A controller alias name. If present the controller will be
+    *      published to scope under the `controllerAs` name.
+    *    - `template` â€“ `{string=}` â€“ html template as a string or a function that
+    *      returns an html template as a string which should be used by {@link
+    *      ngRoute.directive:ngView ngView} or {@link ng.directive:ngInclude ngInclude} directives.
+    *      This property takes precedence over `templateUrl`.
+    *
+    *    - `templateUrl` â€“ `{string=}` â€“ path or function that returns a path to an html
+    *      template that should be used by {@link ngRoute.directive:ngView ngView}.
+    *
+    *    - `transformTemplate` â€“ `{function=} â€“ a function which can be used to transform
+    *      the templateUrl or template provided after it is fetched.  It will be given one
+    *      parameter, the template, and should return a transformed template.
+    *
+    *    - `resolve` - `{Object.<string, function>=}` - An optional map of dependencies which should
+    *      be injected into the controller. If any of these dependencies are promises, the compiler
+    *      will wait for them all to be resolved or one to be rejected before the controller is
+    *      instantiated.
+    *
+    *      - `key` â€“ `{string}`: a name of a dependency to be injected into the controller.
+    *      - `factory` - `{string|function}`: If `string` then it is an alias for a service.
+    *        Otherwise if function, then it is {@link api/AUTO.$injector#invoke injected}
+    *        and the return value is treated as the dependency. If the result is a promise, it is
+    *        resolved before its value is injected into the controller.
+    *
+    * @returns {object=} promise A promsie which will be resolved with a `compileData` object,
+    * with the following properties:
+    *
+    *   - `{element}` â€“ `element` â€“ an uncompiled angular element compiled using the provided template.
+    *   
+    *   - `{function(scope)}`  â€“ `link` â€“ A link function, which, when called, will compile
+    *     the elmeent and instantiate options.controller.
+    *
+    *   - `{object}` â€“ `locals` â€“ The locals which will be passed into the controller once `link` is
+    *     called.
+    *
+    * @usage
+    * $materialCompiler.compile({
+    *   templateUrl: 'modal.html',
+    *   controller: 'ModalCtrl',
+    *   locals: {
+    *     modal: myModalInstance;
+    *   }
+    * }).then(function(compileData) {
+    *   compileData.element; // modal.html's template in an element
+    *   compileData.link(myScope); //attach controller & scope to element
+    * });
+    */
+  this.compile = function(options) {
+    var templateUrl = options.templateUrl;
+    var template = options.template || '';
+    var controller = options.controller;
+    var controllerAs = options.controllerAs;
+    var resolve = options.resolve || {};
+    var locals = options.locals || {};
+    var transformTemplate = options.transformTemplate || angular.identity;
+
+    // Take resolve values and invoke them.  
+    // Resolves can either be a string (value: 'MyRegisteredAngularConst'),
+    // or an invokable 'factory' of sorts: (value: function ValueGetter($dependency) {})
+    angular.forEach(resolve, function(value, key) {
+      if (angular.isString(value)) {
+        resolve[key] = $injector.get(value);
+      } else {
+        resolve[key] = $injector.invoke(value);
+      }
+    });
+    //Add the locals, which are just straight values to inject
+    //eg locals: { three: 3 }, will inject three into the controller
+    angular.extend(resolve, locals);
+
+    if (templateUrl) {
+      resolve.$template = $http.get(templateUrl, {cache: $templateCache})
+        .then(function(response) {
+          return response.data;
+        });
+    } else {
+      resolve.$template = $q.when(template);
+    }
+
+    // Wait for all the resolves to finish if they are promises
+    return $q.all(resolve).then(function(locals) {
+
+      var template = transformTemplate(locals.$template);
+      var element = angular.element('<div>').html(template).contents();
+      var linkFn = $compile(element);
+
+      //Return a linking function that can be used later whne the element is ready
+      return {
+        locals: locals,
+        element: element,
+        link: function link(scope) {
+          locals.$scope = scope;
+
+          //Instantiate controller if it exists, because we have scope
+          if (controller) {
+            var ctrl = $controller(controller, locals);
+            //See angular-route source for this logic
+            element.data('$ngControllerController', ctrl);
+            element.children().data('$ngControllerController', ctrl);
+
+            if (controllerAs) {
+              scope[controllerAs] = ctrl;
+            }
+          }
+
+          return linkFn(scope);
+        }
+      };
+    });
+  };
+}
+
+angular.module('material.services.popup', ['material.services.compiler'])
+
+  .factory('$materialPopup', [
+    '$materialCompiler',
+    '$timeout',
+    '$document',
+    '$animate',
+    '$rootScope',
+    '$rootElement',
+    QpPopupFactory
+  ]);
+
+function QpPopupFactory($materialCompiler, $timeout, $document, $animate, $rootScope, $rootElement) {
+
+  return createPopup;
+
+  function createPopup(options) {
+    var appendTo = options.appendTo || $rootElement;
+    var scope = (options.scope || $rootScope).$new();
+
+    return $materialCompiler.compile(options).then(function(compileData) {
+      var self;
+
+      return self = angular.extend({
+        enter: enter,
+        leave: leave,
+        destroy: destroy,
+        scope: scope
+      }, compileData);
+
+      function enter(done) {
+        if (scope.$$destroyed || self.entered) return (done || angular.noop)();
+
+        self.entered = true;
+        var after = appendTo[0].lastElementChild;
+        $animate.enter(self.element, appendTo, after && angular.element(after), done);
+
+        //On the first enter, compile the element
+        if (!self.compiled) {
+          compileData.link(scope);
+          self.compiled = true;
+        }
+      }
+      function leave(done) {
+        self.entered = false;
+        $animate.leave(self.element, done);
+      }
+      function destroy(done) {
+        if (scope.$$destroyed) return (done || angular.noop)();
+        self.leave(function() {
+          scope.$destroy();
+          (done || angular.noop)();
+        });
+      }
+    });
+  }
+}
+
+angular.module('material.utils', [ ])
+  .factory('$attrBind', [ '$parse', '$interpolate', AttrsBinder ]);
+
+/**
+ *  This service allows directives to easily databind attributes to private scope properties.
+ *
+ * @private
+ */
+function AttrsBinder($parse, $interpolate) {
+  var LOCAL_REGEXP = /^\s*([@=&])(\??)\s*(\w*)\s*$/;
+
+  return function (scope, attrs, bindDefinition, bindDefaults) {
+    angular.forEach(bindDefinition || {}, function (definition, scopeName) {
+      //Adapted from angular.js $compile
+      var match = definition.match(LOCAL_REGEXP) || [],
+        attrName = match[3] || scopeName,
+        mode = match[1], // @, =, or &
+        parentGet,
+        unWatchFn;
+
+      switch (mode) {
+        case '@':   // One-way binding from attribute into scope
+
+          attrs.$observe(attrName, function (value) {
+            scope[scopeName] = value;
+          });
+          attrs.$$observers[attrName].$$scope = scope;
+
+          if (!bypassWithDefaults(attrName, scopeName)) {
+            // we trigger an interpolation to ensure
+            // the value is there for use immediately
+            scope[scopeName] = $interpolate(attrs[attrName])(scope);
+          }
+          break;
+
+        case '=':   // Two-way binding...
+
+          if (!bypassWithDefaults(attrName, scopeName)) {
+            // Immediate evaluation
+            scope[scopeName] = scope.$eval(attrs[attrName]);
+
+            // Data-bind attribute to scope (incoming) and
+            // auto-release watcher when scope is destroyed
+
+            unWatchFn = scope.$watch(attrs[attrName], function (value) {
+              scope[scopeName] = value;
+            });
+            scope.$on('$destroy', unWatchFn);
+          }
+
+          break;
+
+        case '&':   // execute an attribute-defined expression in the context of the parent scope
+
+          if (!bypassWithDefaults(attrName, scopeName, angular.noop)) {
+            /* jshint -W044 */
+            if (attrs[attrName] && attrs[attrName].match(RegExp(scopeName + '\(.*?\)'))) {
+              throw new Error('& expression binding "' + scopeName + '" looks like it will recursively call "' +
+                attrs[attrName] + '" and cause a stack overflow! Please choose a different scopeName.');
+            }
+
+            parentGet = $parse(attrs[attrName]);
+            scope[scopeName] = function (locals) {
+              return parentGet(scope, locals);
+            };
+          }
+
+          break;
+      }
+    });
+
+    /**
+     * Optional fallback value if attribute is not specified on element
+     * @param scopeName
+     */
+    function bypassWithDefaults(attrName, scopeName, defaultVal) {
+      if (!angular.isDefined(attrs[attrName])) {
+        var hasDefault = bindDefaults && bindDefaults.hasOwnProperty(scopeName);
+        scope[scopeName] = hasDefault ? bindDefaults[scopeName] : defaultVal;
+        return true;
+      }
+      return false;
+    }
+
+  };
+}
+
+angular.module('material.utils')
+  .service('$iterator', IteratorFactory);
+
+/**
+ * $iterator Service Class
+ */
+
+function IteratorFactory() {
+
+  return function (items, loop) {
+    return new List(items, loop);
+  };
+
+  /**
+   * List facade to easily support iteration and accessors
+   * @param items Array list which this iterator will enumerate
+   * @param loop Boolean enables iterator to consider the list as an endless loop
+   * @constructor
+   */
+  function List(items, loop) {
+    loop = !!loop;
+
+    var _items = items || [ ];
+
+    // Published API
 
     return {
 
-             /**
-              * API to render ripple animations
-              */
-             ripple : function( canvas, options)
-             {
-               var animator = new Rippler( canvas,  options );
+      items: getItems,
+      count: count,
 
-               // Simple API to start and finish ripples based on mouse/touch events
-               return {
-                 onMouseDown : angular.bind(animator, animator.onMouseDown),
-                 onMouseUp : angular.bind(animator, animator.onMouseUp)
-               };
-             }
+      hasNext: hasNext,
+      inRange: inRange,
+      contains: contains,
+      indexOf: indexOf,
+      itemAt: itemAt,
+      findBy: findBy,
 
-           };
+      add: add,
+      remove: remove,
 
-          // **********************************************************
-          // Rippler Class
-          // **********************************************************
+      first: first,
+      last: last,
+      next: next,
+      previous: previous
 
-          function RipplerClazz() {
+    };
 
-            /**
-             *  Rippler creates a `paper-ripple` which is a visual effect that other quantum paper elements can
-             *  use to simulate a rippling effect emanating from the point of contact.  The
-             *  effect can be visualized as a concentric circle with motion.
-             */
-            function Rippler( canvas, options ) {
+    /**
+     * Publish copy of the enumerable set
+     * @returns {Array|*}
+     */
+    function getItems() {
+      return [].concat(_items);
+    }
 
+    /**
+     * Determine length of the list
+     * @returns {Array.length|*|number}
+     */
+    function count() {
+      return _items.length;
+    }
 
-              var defaults = {
-                /**
-                 * The initial opacity set on the wave.
-                 *
-                 * @attribute initialOpacity
-                 * @type number
-                 * @default 0.25
-                 */
-                initialOpacity : 0.25,
+    /**
+     * Is the index specified valid
+     * @param index
+     * @returns {Array.length|*|number|boolean}
+     */
+    function inRange(index) {
+      return _items.length && ( index > -1 ) && (index < _items.length );
+    }
 
-                /**
-                 * How fast (opacity per second) the wave fades out.
-                 *
-                 * @attribute opacityDecayVelocity
-                 * @type number
-                 * @default 0.8
-                 */
-                opacityDecayVelocity : 0.8,
+    /**
+     * Can the iterator proceed to the next item in the list; relative to
+     * the specified item.
+     *
+     * @param tab
+     * @returns {Array.length|*|number|boolean}
+     */
+    function hasNext(tab) {
+      return tab ? inRange(indexOf(tab) + 1) : false;
+    }
 
-                /**
-                 *
-                 */
-                backgroundFill : true,
+    /**
+     * Get item at specified index/position
+     * @param index
+     * @returns {*}
+     */
+    function itemAt(index) {
+      return inRange(index) ? _items[index] : null;
+    }
 
-                /**
-                 *
-                 */
-                pixelDensity : 1
-              };
+    /**
+     * Find all elements matching the key/value pair
+     * otherwise return null
+     *
+     * @param val
+     * @param key
+     *
+     * @return array
+     */
+    function findBy(key, val) {
 
+      /**
+       * Implement of e6 Array::find()
+       * @param list
+       * @param callback
+       * @returns {*}
+       */
+      function find(list, callback) {
+        var results = [ ];
 
+        angular.forEach(list, function (it, index) {
+          var val = callback.apply(null, [it, index, list]);
+          if (val) {
+            results.push(val);
+          }
+        });
 
-              this.canvas = canvas;
-              this.waves  = [];
+        return results.length ? results : undefined;
+      }
 
-              return angular.extend(this, angular.mixin(options, defaults));
-            };
+      // Use iterator callback to matches element key value
+      // NOTE: searches full prototype chain
 
-            /**
-             *
-             */
-            Rippler.prototype.onMouseDown = function ( startAt ) {
+      return find(_items, function (el) {
+        return ( el[key] == val ) ? el : null;
+      });
 
-              var canvas = this.setupCanvas( this.canvas );
-              var wave = createWave(this.canvas);
+    }
 
-              var width = canvas.width / this.pixelDensity; // Retina canvas
-              var height = canvas.height / this.pixelDensity;
+    /**
+     * Add item to list
+     * @param it
+     * @param index
+     * @returns {*}
+     */
+    function add(it, index) {
+      if (!angular.isDefined(index)) {
+        index = _items.length;
+      }
 
-              // Auto center ripple if startAt is not defined...
-              startAt = startAt || { x : Math.round(width/2), y:Math.round(height/2) };
+      _items.splice(index, 0, it);
 
-              wave.isMouseDown = true;
-              wave.tDown = 0.0;
-              wave.tUp = 0.0;
-              wave.mouseUpStart = 0.0;
-              wave.mouseDownStart = now();
-              wave.startPosition = startAt;
-              wave.containerSize = Math.max(width, height);
-              wave.maxRadius = distanceFromPointToFurthestCorner(wave.startPosition, {w: width, h: height});
+      return indexOf(it);
+    }
 
-              if (this.canvas.classList.contains("recenteringTouch")) {
-                  wave.endPosition = {x: width / 2,  y: height / 2};
-                  wave.slideDistance = dist(wave.startPosition, wave.endPosition);
-              }
+    /**
+     * Remove it from list...
+     * @param it
+     */
+    function remove(it) {
+      _items.splice(indexOf(it), 1);
+    }
 
-              this.waves.push(wave);
+    /**
+     * Get the zero-based index of the target tab
+     * @param it
+     * @returns {*}
+     */
+    function indexOf(it) {
+      return _items.indexOf(it);
+    }
 
-              this.cancelled = false;
+    /**
+     * Boolean existence check
+     * @param it
+     * @returns {boolean}
+     */
+    function contains(it) {
+      return it && (indexOf(it) > -1);
+    }
 
-              requestAnimationFrame(this._loop);
-            };
+    /**
+     * Find the next item
+     * @param tab
+     * @returns {*}
+     */
+    function next(it, validate) {
 
-            /**
-             *
-             */
-            Rippler.prototype.onMouseUp = function () {
-              for (var i = 0; i < this.waves.length; i++) {
-                // Declare the next wave that has mouse down to be mouse'ed up.
-                var wave = this.waves[i];
-                if (wave.isMouseDown) {
-                  wave.isMouseDown = false
-                  wave.mouseUpStart = now();
-                  wave.mouseDownStart = 0;
-                  wave.tUp = 0.0;
-                  break;
-                }
-              }
-              this._loop && requestAnimationFrame(this._loop);
-            };
+      if (contains(it)) {
+        var index = indexOf(it) + 1,
+          found = inRange(index) ? _items[ index ] :
+            loop ? first() : null,
+          skip = found && validate && !validate(found);
 
-            /**
-             *
-             */
-            Rippler.prototype.cancel = function () {
-              this.cancelled = true;
-              return this;
-            };
+        return skip ? next(found) : found;
+      }
 
-            /**
-             *
-             */
-            Rippler.prototype.animate = function (ctx) {
-              // Clear the canvas
-              ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      return null;
+    }
 
-              var deleteTheseWaves = [];
-              // The oldest wave's touch down duration
-              var longestTouchDownDuration = 0;
-              var longestTouchUpDuration = 0;
-              // Save the last known wave color
-              var lastWaveColor = null;
-              // wave animation values
-              var anim = {
-                initialOpacity: this.initialOpacity,
-                opacityDecayVelocity: this.opacityDecayVelocity,
-                height: ctx.canvas.height,
-                width: ctx.canvas.width
-              }
+    /**
+     * Find the previous item
+     * @param tab
+     * @returns {*}
+     */
+    function previous(it, validate) {
 
-              for (var i = 0; i < this.waves.length; i++) {
-                var wave = this.waves[i];
+      if (contains(it)) {
+        var index = indexOf(it) - 1,
+          found = inRange(index) ? _items[ index ] :
+            loop ? last() : null,
+          skip = found && validate && !validate(found);
 
-                if (wave.mouseDownStart > 0) {
-                  wave.tDown = now() - wave.mouseDownStart;
-                }
-                if (wave.mouseUpStart > 0) {
-                  wave.tUp = now() - wave.mouseUpStart;
-                }
+        return skip ? previous(found) : found;
+      }
 
-                // Determine how long the touch has been up or down.
-                var tUp = wave.tUp;
-                var tDown = wave.tDown;
-                longestTouchDownDuration = Math.max(longestTouchDownDuration, tDown);
-                longestTouchUpDuration = Math.max(longestTouchUpDuration, tUp);
+      return null;
+    }
 
-                // Obtain the instantenous size and alpha of the ripple.
-                var radius = waveRadiusFn(tDown, tUp, anim);
-                var waveAlpha =  waveOpacityFn(tDown, tUp, anim);
-                var waveColor = cssColorWithAlpha(wave.waveColor, waveAlpha);
-                lastWaveColor = wave.waveColor;
+    /**
+     * Return first item in the list
+     * @returns {*}
+     */
+    function first() {
+      return _items.length ? _items[0] : null;
+    }
 
-                // Position of the ripple.
-                var x = wave.startPosition.x;
-                var y = wave.startPosition.y;
+    /**
+     * Return last item in the list...
+     * @returns {*}
+     */
+    function last() {
+      return _items.length ? _items[_items.length - 1] : null;
+    }
 
-                // Ripple gravitational pull to the center of the canvas.
-                if (wave.endPosition) {
+  }
 
-                  var translateFraction = waveGravityToCenterPercentageFn(tDown, tUp, wave.maxRadius);
-
-                  // This translates from the origin to the center of the view  based on the max dimension of
-                  var translateFraction = Math.min(1, radius / wave.containerSize * 2 / Math.sqrt(2) );
-
-                  x += translateFraction * (wave.endPosition.x - wave.startPosition.x);
-                  y += translateFraction * (wave.endPosition.y - wave.startPosition.y);
-                }
-
-                // If we do a background fill fade too, work out the correct color.
-                var bgFillColor = null;
-                if (this.backgroundFill) {
-                  var bgFillAlpha = waveOuterOpacityFn(tDown, tUp, anim);
-                  bgFillColor = cssColorWithAlpha(wave.waveColor, bgFillAlpha);
-                }
-
-                // Draw the ripple.
-                drawRipple(ctx, x, y, radius, waveColor, bgFillColor);
-
-                // Determine whether there is any more rendering to be done.
-                var maximumWave = waveAtMaximum(wave, radius, anim);
-                var waveDissipated = waveDidFinish(wave, radius, anim);
-                var shouldKeepWave = !waveDissipated || maximumWave;
-                var shouldRenderWaveAgain = !waveDissipated && !maximumWave;
-
-                if (!shouldKeepWave || this.cancelled) {
-                  deleteTheseWaves.push(wave);
-                }
-              }
-
-              if (shouldRenderWaveAgain) {
-                requestAnimationFrame(this._loop);
-              }
-
-              for (var i = 0; i < deleteTheseWaves.length; ++i) {
-                var wave = deleteTheseWaves[i];
-                removeWaveFromScope(this, wave);
-              }
-
-              if (!this.waves.length) {
-                // If there is nothing to draw, clear any drawn waves now because
-                // we're not going to get another requestAnimationFrame any more.
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                this._loop = null;
-              }
-
-              return this;
-            };
+}
 
 
-            Rippler.prototype.adjustBounds = function( canvas )
+
+
+/**
+ * @author      Thomas Burleson
+ * @date        November, 2013
+ * @description
+ *
+ *  String supplant global utility (similar to but more powerful than sprintf() ).
+ *
+ *  Usages:
+ *
+ *      var user = {
+ *              first : "Thomas",
+ *              last  : "Burleson",
+ *              address : {
+ *                  city : "West Des Moines",
+ *                  state: "Iowa"
+ *              },
+ *              contact : {
+ *                  email : "ThomasBurleson@Gmail.com"
+ *                  url   : "http://www.solutionOptimist.com"
+ *              }
+ *          },
+ *          message = "Hello Mr. {first} {last}. How's life in {address.city}, {address.state} ?";
+ *
+ *     return supplant( message, user );
+ *
+ */
+(function( window ) {
+    "use strict";
+        var INVALID_DATA = "Undefined template provided";
+
+        // supplant() method from Crockfords `Remedial Javascript`
+
+        var supplant =  function( template, values, pattern ) {
+            if(!template)
             {
-              // Default to parent container to define bounds
-              var self = this,
-                src = canvas.parentNode.getBoundingClientRect(),  // read-only
-                bounds = { width : src.width, height: src.height };
+              throw(new Error(INVALID_DATA));
+            }
 
-              angular.forEach("width height".split(" "), function( style ) {
-                var value = (self[style] != "auto") ? self[style] : undefined;
+            pattern = pattern || /\{([^\{\}]*)\}/g;
 
-                // Allow CSS to explicitly define bounds (instead of parent container
-                if ( angular.isDefined(value ) ) {
-                  bounds[style] = sanitizePosition( value );
-                  canvas.setAttribute(style, bounds[style] * self.pixelDensity + "px");
+            return template.replace(pattern, function(a, b) {
+                var p = b.split('.'),
+                    r = values;
+
+                try {
+                    for (var s in p) { r = r[p[s]];  }
+                } catch(e){
+                    r = a;
                 }
 
-              });
-
-              // NOTE: Modified from polymer implementation
-              canvas.setAttribute('width', bounds.width * this.pixelDensity + "px");
-              canvas.setAttribute('height', bounds.height * this.pixelDensity + "px");
+                return (typeof r === 'string' || typeof r === 'number' || typeof r === 'boolean') ? r : a;
+            });
+        };
 
 
-                function sanitizePosition( style )
-                {
-                  var val = style.replace('px','');
-                  return val;
-                }
+        // supplant() method from Crockfords `Remedial Javascript`
+        Function.prototype.method = function (name, func) {
+            this.prototype[name] = func;
+            return this;
+        };
 
-              return canvas;
-            }
-
-
-            /**
-             * Resize the canvas to fill the parent's dimensions...
-             */
-            Rippler.prototype.setupCanvas = function ( canvas ) {
-
-              var ctx = this.adjustBounds(canvas).getContext('2d');
-              ctx.scale(this.pixelDensity, this.pixelDensity);
-              
-              if (!this._loop) {
-                this._loop = this.animate.bind(this, ctx);
-              }
-              return canvas;
-            };
-
-
-            return Rippler;
-
-          };
-
-
-
-
-          // **********************************************************
-          // Private Wave Methods
-          // **********************************************************
-
-
-
-          /**
-           *
-           */
-          function waveRadiusFn(touchDownMs, touchUpMs, anim) {
-            // Convert from ms to s.
-            var waveMaxRadius = 150;
-            var touchDown = touchDownMs / 1000;
-            var touchUp = touchUpMs / 1000;
-            var totalElapsed = touchDown + touchUp;
-            var ww = anim.width, hh = anim.height;
-            // use diagonal size of container to avoid floating point math sadness
-            var waveRadius = Math.min(Math.sqrt(ww * ww + hh * hh), waveMaxRadius) * 1.1 + 5;
-            var duration = 1.1 - .2 * (waveRadius / waveMaxRadius);
-            var tt = (totalElapsed / duration);
-
-            var size = waveRadius * (1 - Math.pow(80, -tt));
-            return Math.abs(size);
-          }
-
-          /**
-           *
-           */
-          function waveOpacityFn(td, tu, anim) {
-            // Convert from ms to s.
-            var touchDown = td / 1000;
-            var touchUp = tu / 1000;
-            var totalElapsed = touchDown + touchUp;
-
-            if (tu <= 0) {  // before touch up
-              return anim.initialOpacity;
-            }
-            return Math.max(0, anim.initialOpacity - touchUp * anim.opacityDecayVelocity);
-          }
-
-          /**
-           *
-           */
-          function waveOuterOpacityFn(td, tu, anim) {
-            // Convert from ms to s.
-            var touchDown = td / 1000;
-            var touchUp = tu / 1000;
-
-            // Linear increase in background opacity, capped at the opacity
-            // of the wavefront (waveOpacity).
-            var outerOpacity = touchDown * 0.3;
-            var waveOpacity = waveOpacityFn(td, tu, anim);
-            return Math.max(0, Math.min(outerOpacity, waveOpacity));
-          }
-
-          /**
-           *
-           */
-          function waveGravityToCenterPercentageFn(td, tu, r) {
-            // Convert from ms to s.
-            var touchDown = td / 1000;
-            var touchUp = tu / 1000;
-            var totalElapsed = touchDown + touchUp;
-
-            return Math.min(1.0, touchUp * 6);
-          }
-
-          /**
-           * Determines whether the wave should be completely removed.
-           */
-          function waveDidFinish(wave, radius, anim) {
-            var waveMaxRadius = 150;
-            var waveOpacity = waveOpacityFn(wave.tDown, wave.tUp, anim);
-            // If the wave opacity is 0 and the radius exceeds the bounds
-            // of the element, then this is finished.
-            if (waveOpacity < 0.01 && radius >= Math.min(wave.maxRadius, waveMaxRadius)) {
-              return true;
-            }
-            return false;
-          };
-
-          /**
-           *
-           */
-          function waveAtMaximum(wave, radius, anim) {
-            var waveMaxRadius = 150;
-            var waveOpacity = waveOpacityFn(wave.tDown, wave.tUp, anim);
-            if (waveOpacity >= anim.initialOpacity && radius >= Math.min(wave.maxRadius, waveMaxRadius)) {
-              return true;
-            }
-            return false;
-          }
-
-          /**
-           *
-           */
-          function createWave(elem) {
-            var elementStyle = window.getComputedStyle(elem);
-
-            var wave = {
-              waveColor: elementStyle.color,
-              maxRadius: 0,
-              isMouseDown: false,
-              mouseDownStart: 0.0,
-              mouseUpStart: 0.0,
-              tDown: 0,
-              tUp: 0
-            };
-            return wave;
-          }
-
-          /**
-           *
-           */
-          function removeWaveFromScope(scope, wave) {
-            if (scope.waves) {
-              var pos = scope.waves.indexOf(wave);
-              scope.waves.splice(pos, 1);
-            }
-          };
-
-          /**
-           *
-           */
-          function drawRipple(ctx, x, y, radius, innerColor, outerColor) {
-            if (outerColor) {
-              ctx.fillStyle = outerColor || 'rgba(252, 252, 158, 1.0)';
-              ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height);
-            }
-            ctx.beginPath();
-
-            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
-            ctx.fillStyle = innerColor || 'rgba(252, 252, 158, 1.0)';
-            ctx.fill();
-
-            //ctx.closePath();
-          }
-
-
-          /**
-           *
-           */
-          function cssColorWithAlpha(cssColor, alpha) {
-            var parts = cssColor ? cssColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/) : null;
-            if (typeof alpha == 'undefined') {
-              alpha = 1;
-            }
-            if (!parts) {
-              return 'rgba(255, 255, 255, ' + alpha + ')';
-            }
-            return 'rgba(' + parts[1] + ', ' + parts[2] + ', ' + parts[3] + ', ' + alpha + ')';
-          }
-
-          /**
-           *
-           */
-          function dist(p1, p2) {
-            return Math.sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
-          }
-
-          /**
-           *
-           */
-          function distanceFromPointToFurthestCorner(point, size) {
-            var tl_d = dist(point, {x: 0, y: 0});
-            var tr_d = dist(point, {x: size.w, y: 0});
-            var bl_d = dist(point, {x: 0, y: size.h});
-            var br_d = dist(point, {x: size.w, y: size.h});
-            return Math.max(tl_d, tr_d, bl_d, br_d);
-          }
-
+        String.method("supplant", function( values, pattern ) {
+            var self = this;
+            return supplant(self, values, pattern);
         });
 
 
+        // Publish this global function...
+        window.supplant = String.supplant = supplant;
 
-
-
-
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-  $scope.data = {};
-  $scope.data.cb1 = true;
-  $scope.data.cb2 = false;
-
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-})
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope, $materialDialog) {
-
-  $scope.dialog = function() {
-    $materialDialog({
-      templateUrl: 'my-dialog.html',
-      controller: [
-        '$scope', 
-        '$hideDialog', 
-        function($scope, $hideDialog) {
-          $scope.close = function() {
-            $hideDialog();
-          };
-        }
-      ]
-    });
-  };
-
-});
-
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-  $scope.data = {};
-})
-
-.directive('ig', function() {
-  return {
-    restrict: 'E',
-    replace: true,
-    scope: {
-      fid: '@'
-    },
-    template: '<div class="material-input-group">' +
-                '<label for="{{fid}}">Description</label>' +
-                '<input id="{{fid}}" type="text" ng-model="data.description">' +
-              '</div>',
-  }
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-})
-
-.directive('face', function() {
-  return {
-    restrict: 'E',
-    template: '<img ng-src="{{face}}">',
-    scope: true,
-    link: function($scope, $element, $attr) {
-      $scope.face = 'http://placekitten.com/40/40';
-    }
-  }
-});
-
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-  $scope.data = {
-    group2 : '6',
-    group1 : '2'
-  };
-
-  $scope.radioData = [
-    { label: 'Label 4', value: '4' },
-    { label: 'Label 5', value: '5' },
-    { label: 'Label 6', value: '6' }
-  ];
-
-  $scope.addItem = function() {
-    var r = Math.ceil(Math.random() * 1000);
-    $scope.radioData.push({ label: 'Label ' + r, value: r });
-  };
-
-  $scope.removeItem = function() {
-    $scope.radioData.pop();
-  };
-
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope, $timeout, $materialSidenav) {
-  $scope.toggleLeft = function() {
-    $materialSidenav('left').toggle();
-  }
-})
-
-.controller('LeftCtrl', function($scope, $materialSidenav) {
-  $scope.close = function() {
-    $materialSidenav('left').close();
-  }
-})
-
-.controller('ListCtrl', function($scope, $materialSidenav) {
-  $scope.toggleLeft = function() {
-    $materialSidenav('left').toggle();
-  }
-})
-
-.directive('driveItem', function() {
-  return {
-    restrict: 'E',
-    templateUrl: 'drive-item.html'
-  }
-})
-
-.directive('iconFill', function() {
-  return {
-    restrict: 'E',
-    templateUrl: 'icon.html'
-  }
-})
-
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope, $timeout, $materialSidenav) {
-  var leftNav;
-  $timeout(function() {
-    leftNav = $materialSidenav('left');
-  });
-  var rightNav;
-  $timeout(function() {
-    rightNav = $materialSidenav('right');
-  });
-  $scope.toggleLeft = function() {
-    leftNav.toggle();
-  };
-  $scope.toggleRight = function() {
-    rightNav.toggle();
-  };
-})
-
-.controller('LeftCtrl', function($scope, $timeout, $materialSidenav) {
-  var nav;
-  $timeout(function() {
-    nav = $materialSidenav('left');
-  });
-  $scope.close = function() {
-    nav.close();
-  };
-})
-
-.controller('RightCtrl', function($scope, $timeout, $materialSidenav) {
-  var nav;
-  $timeout(function() {
-    nav = $materialSidenav('right');
-  });
-  $scope.close = function() {
-    nav.close();
-  };
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-  $scope.data = {
-    slider1: 0,
-    slider2: 50,
-    slider3: 8,
-  }
-
-});
-
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope, $materialToast, $animate) {
-  
-  $scope.toastPosition = {
-    bottom: true,
-    top: false,
-    left: true,
-    right: false,
-    fit: false
-  };
-
-  $scope.getToastPosition = function() {
-    return Object.keys($scope.toastPosition)
-      .filter(function(pos) { return $scope.toastPosition[pos]; })
-      .join(' ');
-  };
-
-  $scope.complexToastIt = function() {
-    $materialToast({
-      controller: 'ToastCtrl',
-      templateUrl: 'toast-template.html',
-      duration: 5000,
-      position: $scope.getToastPosition()
-    });
-  };
-
-  $scope.toastIt = function() {
-    $materialToast({
-      template: 'Hello, ' + Math.random(),
-      duration: 2000,
-      position: $scope.getToastPosition()
-    });
-  };
-
-})
-
-.controller('ToastCtrl', function($scope, $hideToast) {
-  $scope.closeToast = function() {
-    $hideToast();
-  };
-});
-
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-})
-
-.directive('svgIcon', function() {
-  return {
-    restrict: 'E',
-    replace: true,
-    template: '<svg viewBox="0 0 24 24" style="pointer-events: none;"><g><g><rect fill="none" width="24" height="24"></rect><path d="M3,18h18v-2H3V18z M3,13h18v-2H3V13z M3,6v2h18V6H3z"></path></g></g></svg>'
-  }
-});
-
-angular.module('app', ['ngMaterial'])
-
-.controller('AppCtrl', function($scope) {
-
-});
-
-angular.module('app', ['ngMaterial'] )
-.controller('AppCtrl', function( $scope ) {
-    var tabs = [
-      { title: 'Polymer', active: true,  disabled: false, content:"Polymer practices are great!" },
-      { title: 'Material', active: false, disabled: true , content:"Material Design practices are better!" },
-      { title: 'Angular', active: false, disabled: true , content:"AngularJS practices are the best!" },
-      { title: 'NodeJS' , active: false, disabled: false, content:"NodeJS practices are amazing!" }
-    ];
-
-    $scope.activeIndex = 1;
-    $scope.tabs = [].concat(tabs);
-
-});
-
-
-angular.module('app', ['ngMaterial'] )
-  .controller('AppCtrl', function( $scope ) {
-    var tabs = [
-      { title: 'Polymer', active: true,  disabled: false, content:"Polymer practices are great!" },
-      { title: 'Material', active: false, disabled: true , content:"Material Design practices are better!" },
-      { title: 'Angular', active: false, disabled: true , content:"AngularJS practices are the best!" },
-      { title: 'NodeJS' , active: false, disabled: false, content:"NodeJS practices are amazing!" }
-    ];
-
-    $scope.activeIndex = 1;
-    $scope.tabs = [].concat(tabs);
-
-  });
-
-
-angular.module('app', ['ngMaterial'] )
-  .controller('AppCtrl', function( $scope ) {
-    var tabs = [
-      { title: 'Polymer', active: true,  disabled: false, content:"Polymer practices are great!" },
-      { title: 'Material', active: false, disabled: true , content:"Material Design practices are better!" },
-      { title: 'Angular', active: false, disabled: true , content:"AngularJS practices are the best!" },
-      { title: 'NodeJS' , active: false, disabled: false, content:"NodeJS practices are amazing!" }
-    ];
-
-    $scope.which = 0;
-
-  });
-
-
-angular.module('app', ['ngMaterial'] )
-  .controller('AppCtrl', function( $scope ) {
-    var tabs = [
-      { title: 'Polymer', active: true,  disabled: false, content:"Polymer practices are great!" },
-      { title: 'Material', active: false, disabled: true , content:"Material Design practices are better!" },
-      { title: 'Angular', active: false, disabled: true , content:"AngularJS practices are the best!" },
-      { title: 'NodeJS' , active: false, disabled: false, content:"NodeJS practices are amazing!" }
-    ];
-
-    $scope.tabs = tabs;
-    $scope.predicate = "title";
-    $scope.reversed = true;
-    $scope.selectedIndex = 2;
-    $scope.allowDisable = true;
-
-    $scope.onTabSelected = onTabSelected;
-    $scope.announceSelected = announceSelected;
-    $scope.announceDeselected = announceDeselected;
-
-    $scope.addTab = function( title, view )
-    {
-      view = view || title + " Content View";
-      tabs.push( { title : title, content: view, active:false, disabled: false});
-    };
-
-    $scope.removeTab =function( tab )
-    {
-      for(var j=0; j<tabs.length; j++ )
-      {
-        if ( tab.title == tabs[j].title )
-        {
-          $scope.tabs.splice(j,1);
-          break;
-        }
-      }
-    }
-
-    $scope.submit = function($event)
-    {
-      if ( $event.which !== 13 ) return;
-      if ( $scope.tTitle != "" )
-      {
-        $scope.addTab( $scope.tTitle, $scope.tContent );
-      }
-    }
-
-
-    // **********************************************************
-    // Private Methods
-    // **********************************************************
-
-    function onTabSelected( tab ) {
-      $scope.selectedIndex = this.$index;
-
-      $scope.announceSelected( tab );
-    }
-
-    function announceDeselected( tab ) {
-      $scope.farewell = supplant( "Goodbye {title}!", tab );
-    }
-
-    function announceSelected( tab ) {
-      $scope.greeting = supplant( "Hello {title}!", tab );
-    }
-
-  });
-
-
-angular.module('app', ['ngMaterial'] )
-  .controller('AppCtrl', function( $scope ) {
-    var tabs = [
-      { title: 'Polymer', active: true,  disabled: false, content:"Polymer practices are great!" },
-      { title: 'Material', active: false, disabled: true , content:"Material Design practices are better!" },
-      { title: 'Angular', active: false, disabled: true , content:"AngularJS practices are the best!" },
-      { title: 'NodeJS' , active: false, disabled: false, content:"NodeJS practices are amazing!" }
-    ];
-
-    $scope.selectedIndex = 0;
-    $scope.twoDisabled = true;
-
-  });
-
-
-angular.module('app', ['ngMaterial', 'ngRoute'])
-
-.config(function($routeProvider) {
-  $routeProvider
-    .when('/material', {
-      templateUrl: 'material.html',
-      controller: 'MaterialTabCtrl'
-    })
-    .when('/angular', {
-      templateUrl: 'angular.html',
-      controller: 'AngularTabCtrl'
-    })
-    .when('/polymer', {
-      templateUrl: 'polymer.html',
-      controller: 'PolymerTabCtrl'
-    })
-    .otherwise({
-      redirectTo: '/material'
-    });
-})
-
-.controller('AppCtrl', function($scope, $location) {
-  var tabs = $scope.tabs = [
-    { path: '/material', label: 'Material Design' },
-    { path: '/angular', label: 'Use Angular' },
-    { path: '/polymer', label: 'Use Polymer' },
-  ];
-
-  $scope.selectedTabIndex = 0;
-  $scope.$watch('selectedTabIndex', watchSelectedTab);
-  
-  function watchSelectedTab(index, oldIndex) {
-    console.log('selecting from', oldIndex, 'to', index);
-    $scope.reverse = index < oldIndex;
-    $location.path(tabs[index].path);
-  }
-
-})
-
-.controller('MaterialTabCtrl', function($scope) {
-})
-
-.controller('AngularTabCtrl', function($scope) {
-})
-
-.controller('PolymerTabCtrl', function($scope) {
-});
+}( window ));
 
 })();

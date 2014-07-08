@@ -30,7 +30,7 @@ module.exports = function (grunt) {
     http: {
       updateLines: {
         options: {
-          url: 'http://localhost:' + config.port + '/api/users/updateLines',
+          url: '&siteURL&',
           method: 'POST',
           form: {
             username: username,

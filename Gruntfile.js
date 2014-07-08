@@ -426,11 +426,13 @@ module.exports = function (grunt) {
       },
       src: [
         '<%= yeoman.app %>/scripts/**/*.js',
+        '!<%= yeoman.app %>/scripts/lib/**/*.js',
         '<%= yeoman.app %>/styles/**/*.css',
         '<%= yeoman.app %>/styles/**/*.scss',
         '<%= yeoman.lib %>/**/*.js',
         '<%= yeoman.test %>/**/*.js',
         '<%= yeoman.app %>/views/**/*.html',
+        'install.js',
         'bower.json'
       ],
     }

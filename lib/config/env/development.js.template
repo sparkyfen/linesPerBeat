@@ -4,7 +4,8 @@ module.exports = {
   env: 'development',
   couchdb: {
     url: 'http://localhost:5984',
-    users: 'linesperbeat-user'
+    users: 'linesperbeat-user',
+    childProcesses: 'linesperbeat-childprocesses'
   },
   crypto: {
     salt: '' // 64+ character string.
@@ -16,5 +17,8 @@ module.exports = {
     api_key: '', // Last.FM API Key.
     secret: '', // Last.FM API Secret.
     useragent: 'LinesPerBeat/v0.1' // Some string to represent the useragent.
+  },
+  imgur: {
+    clientId: '' //https://api.imgur.com/oauth2/addclient
   }
 };

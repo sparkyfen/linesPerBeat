@@ -11,7 +11,8 @@ form.loginForm .material-input-group input,
 form.registerForm .material-input-group input,
 form.changePasswordForm .material-input-group input,
 form.editProfileForm .material-input-group input,
-form.linkForm .material-input-group input {
+form.linkForm .material-input-group input,
+form.uploadForm .material-input-group input {
   width: 75%;
 }
 
@@ -43,17 +44,9 @@ img#gruntLogo {
   height: 150px;
 }
 
-/* Thanks https://github.com/csarsam */
-
-li:hover .submenu {
-  background: #fff;
-  border: 1px solid #b7b7b7;
-  display: block;
-  left: -0.5px;
-  top: 32.625px;
-  visibility: visible;
-}
-
-ul#std-profile .caret {
-  margin-left: -20px;
+/* Adopted from polymer-project css */
+material-tabs.transparent-light {
+  background-color: transparent;
+  color: #4285F4;
+  box-shadow: none;
 }

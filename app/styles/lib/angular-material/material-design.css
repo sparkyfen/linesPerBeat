@@ -259,9 +259,6 @@ material-content {
   overflow-y: auto;
   overflow-x: hidden; }
 
-material-toolbar ~ material-content {
-  top: 60px; }
-
 material-icon {
   position: relative;
   display: inline-block;
@@ -856,7 +853,7 @@ material-toolbar {
   material-toolbar.material-medium-tall {
     height: 128px; }
   material-toolbar .material-indent {
-    margin-left: 62px; }
+    margin-left: 64px; }
 
 .material-toolbar-tools {
   height: 64px;
@@ -932,7 +929,7 @@ shadow {
 material-item {
   position: relative;
   box-sizing: border-box;
-  padding: 0px 16px 0px 16px; }
+  padding: 0px 0px 0px 0px; }
 
 /**
  * The left tile for a list item.
@@ -946,7 +943,7 @@ material-item {
  * The center content tile for a list item.
  */
 .material-tile-content {
-  margin-right: -16px;
+  margin-right: -35px;
   padding: 15px 0 15px 0;
   width: 100%;
   border-bottom: 1px solid #eee;
@@ -969,7 +966,7 @@ material-item {
 .material-tile-right {
   position: absolute;
   top: 17px;
-  right: 16px; }
+  right: 0px; }
 
 .material-whiteframe, .material-whiteframe-z1, .material-whiteframe-z2, .material-whiteframe-z3, .material-whiteframe-z4, .material-whiteframe-z5 {
   display: block; }

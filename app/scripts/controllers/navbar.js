@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location', 'UserService', '$rootScope', '$window', '$timeout', '$materialToast', '$route', function ($scope, $location, UserService, $rootScope, $window, $timeout, $materialToast, $route) {
-  if($window.localStorage.getItem('user') !== null) {
-    $rootScope.isLoggedIn = true;
-  } else {
-    $rootScope.isLoggedIn = false;
-  }
+angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location', 'UserService', '$window', '$timeout', '$materialToast', '$rootScope', function ($scope, $location, UserService, $window, $timeout, $materialToast, $rootScope) {
   $scope.username = $window.localStorage.getItem('user');
+  if($scope.username !== null) {
+    $scope.isLoggedIn = true;
+  } else {
+    $scope.isLoggedIn = false;
+  }
   $scope.brand = {
     title: 'Lines-Per-Beat',
     link: '/',
@@ -31,16 +31,27 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
   },{
     title: 'Login',
     link: '/login',
-    show: !$rootScope.isLoggedIn,
+    show: !$scope.isLoggedIn,
     disabled: false,
     submenu: false
   },{
     title: $scope.username,
     link: '',
-    show: $rootScope.isLoggedIn,
+    show: $scope.isLoggedIn,
     disabled: false,
     submenu: true
   }];
+  $rootScope.$on('isLoggedIn', function (event, reply) {
+    if(reply.value) {
+      $scope.menu[2].show = false;
+      $scope.username = reply.user;
+      $scope.menu[3].show = true;
+      $scope.selectedItem = 0;
+    } else {
+      $scope.menu[2].show = true;
+      $scope.menu[3].show = false;
+    }
+  });
   $scope.usermenu = [{
     title: 'Edit Profile',
     link: '/user/editProfile',
@@ -76,14 +87,12 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     UserService.logout().success(function (logoutResp) {
       $materialToast({
         template: logoutResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
       $window.localStorage.clear();
-      $rootScope.isLoggedIn = false;
-      $timeout(function () {
-        $route.reload();
-      }, 500);
+      $scope.$emit('isLoggedIn', {value: false});
+      $scope.selectedItem = 0;
     }).error(function (error) {
       $materialToast({
         template: error.message,

@@ -22,13 +22,13 @@ angular.module('linesPerBeatApp').controller('LoginCtrl', ['$scope', 'UserServic
       $window.localStorage.setItem('user', $scope.username);
       $materialToast({
         template: loginResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
-      $rootScope.isLoggedIn = true;
+      $rootScope.$emit('isLoggedIn', {value: true, user: $scope.username});
       $timeout(function () {
         $location.path('/');
-      }, 500);
+      }, 700);
     }).error(function (error) {
       $materialToast({
         template: error.message,
@@ -49,13 +49,13 @@ angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserSer
     UserService.register(registerData).success(function (registerResp) {
       $materialToast({
         template: registerResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
       $window.localStorage.setItem('user', $scope.username);
       $timeout(function () {
         $location.path('/linkLastFm');
-      }, 500);
+      }, 700);
     }).error(function (error) {
       $materialToast({
         template: error.message,
@@ -76,12 +76,12 @@ angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserS
     UserService.linkAccount(linkData).success(function (linkResp) {
       $materialToast({
         template: linkResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
       $timeout(function () {
         $location.path('/getGruntFile');
-      }, 500);
+      }, 700);
     }).error(function (error, statusCode) {
       $materialToast({
         template: error.message,
@@ -131,7 +131,7 @@ angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'User
     UserService.uploadAvatar(uploadData).success(function (uploadResp) {
       $materialToast({
         template: uploadResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
       $route.reload();
@@ -156,7 +156,7 @@ angular.module('linesPerBeatApp').controller('EditProfileCtrl', ['$scope', 'User
     UserService.updateProfile(profileData).success(function (profileResp) {
       $materialToast({
         template: profileResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
     }).error(function (error, statusCode) {
@@ -194,14 +194,14 @@ angular.module('linesPerBeatApp').controller('ChangePasswordCtrl', ['$scope', 'U
     UserService.changePassword(passwordData).success(function (passwordResp) {
       $materialToast({
         template: passwordResp.message,
-        duration: 500,
+        duration: 700,
         position: 'left bottom'
       });
       $timeout(function () {
         // Clear user out of localstorage.
         $window.localStorage.clear();
         $location.path('/');
-      }, 500);
+      }, 700);
     }).error(function (error, statusCode) {
       $materialToast({
         template: error.message,

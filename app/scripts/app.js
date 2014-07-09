@@ -23,8 +23,28 @@ angular.module('linesPerBeatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngR
   }).when('/user/changePassword', {
     templateUrl: 'partials/user/changePassword',
     controller: 'ChangePasswordCtrl'
+  }).when('/admin', {
+    templateUrl: 'partials/admin/main',
+    controller: 'AdminMainCtrl'
+  }).when('/admin/login', {
+    templateUrl: 'partials/admin/login',
+    controller: 'AdminLoginCtrl'
   }).otherwise({
     redirectTo: '/'
   });
   $locationProvider.html5Mode(true);
+}).run(function (AdminService, $materialToast, $rootScope, $location) {
+  $rootScope.$on('$locationChangeStart', function (event) {
+    if($location.path() === '/admin') {
+      AdminService.checkCookie().error(function (error) {
+        $materialToast({
+          template: error.message,
+          duration: 2000,
+          position: 'left bottom'
+        });
+        event.preventDefault();
+        $location.path('/admin/login');
+      });
+    }
+  });
 });

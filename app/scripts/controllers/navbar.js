@@ -42,6 +42,7 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     submenu: true
   }];
   $rootScope.$on('isLoggedIn', function (event, reply) {
+    // TODO Sometimes the user will show on the navbar, sometimes it won't.
     if(reply.value) {
       $scope.menu[2].show = false;
       $scope.username = reply.user;

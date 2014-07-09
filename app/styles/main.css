@@ -12,7 +12,8 @@ form.registerForm .material-input-group input,
 form.changePasswordForm .material-input-group input,
 form.editProfileForm .material-input-group input,
 form.linkForm .material-input-group input,
-form.uploadForm .material-input-group input {
+form.uploadForm .material-input-group input,
+form.adminLoginForm .material-input-group input {
   width: 75%;
 }
 

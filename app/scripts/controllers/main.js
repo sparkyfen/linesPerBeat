@@ -39,7 +39,7 @@ angular.module('linesPerBeatApp').controller('LoginCtrl', ['$scope', 'UserServic
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserService', '$location', '$timeout', '$window', '$materialToast', function ($scope, UserService, $location, $timeout, $window, $materialToast) {
+angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserService', '$location', '$timeout', '$window', '$materialToast', '$rootScope', function ($scope, UserService, $location, $timeout, $window, $materialToast, $rootScope) {
   $scope.register = function() {
     var registerData = {
       username: $scope.username,
@@ -47,12 +47,13 @@ angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserSer
       confirmPassword: $scope.confirmPassword
     };
     UserService.register(registerData).success(function (registerResp) {
+      $window.localStorage.setItem('user', $scope.username);
       $materialToast({
         template: registerResp.message,
         duration: 700,
         position: 'left bottom'
       });
-      $window.localStorage.setItem('user', $scope.username);
+      $rootScope.$emit('isLoggedIn', {value: true, user: $scope.username});
       $timeout(function () {
         $location.path('/linkLastFm');
       }, 700);
@@ -66,7 +67,16 @@ angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserSer
   };
 }]);
 
-angular.module('linesPerBeatApp').controller('GruntFileCtrl', [function () {}]);
+angular.module('linesPerBeatApp').controller('GruntFileCtrl', ['$scope', '$location', '$materialToast', function ($scope, $location, $materialToast) {
+  $scope.finishRegistration = function() {
+    $materialToast({
+      template: 'Registration complete.',
+      duration: 1000,
+      position: 'left bottom'
+    });
+    $location.path('/');
+  };
+}]);
 
 angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserService', '$location', '$timeout', '$materialToast', '$window', function ($scope, UserService, $location, $timeout, $materialToast, $window) {
   $scope.linkAccount = function() {

@@ -56,6 +56,7 @@ Dependencies
 ------------
 * [NodeJS](http://nodejs.org)
 * [CouchDB](http://couchdb.apache.org)
+* [Last.FM Account](http://www.last.fm/api)
 * [Imgur Account](https://api.imgur.com)
 
 Installation

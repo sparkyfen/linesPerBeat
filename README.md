@@ -47,6 +47,11 @@ API Docs
 --------
 [/docs/](docs/)
 
+```bash
+# Generate API Docs
+grunt apidoc
+```
+
 Test
 ----
 ```bash

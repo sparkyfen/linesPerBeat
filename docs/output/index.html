@@ -1,0 +1,43 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <base href="/">
+    <title>Lines-Per-Beat API Docs</title>
+    <meta name="description" content="Hackathon LeaderBoard API Docs">
+    <meta name="viewport" content="initial-scale=1.0,width=device-width,user-scalable=0, minimal-ui" />
+    <link rel="stylesheet" href="../styles/lib/angular-material/material-design.css">
+  </head>
+  <body ng-app="docsApp">
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <!-- Add your site or application content here -->
+    <div class="container" ng-controller="MainCtrl" class="tabs-view">
+        <material-card>
+            <h2>Run 'grunt apidoc' to create the documentation.</h2>
+        </material-card>
+    </div>
+
+    <!--[if lt IE 9]>
+    <script src="../bower_components/es5-shim/es5-shim.js"></script>
+    <script src="../bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/angular-animate.js"></script>
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="../scripts/lib/angular-material/angular-animate-sequence.js"></script>
+        <script src="../scripts/lib/angular-material/angular-animate-stylers.js"></script>
+        <script src="../scripts/lib/angular-material/material-design.js"></script>
+        <script>
+        angular.module('docsApp', ['ngAnimate', 'ngMaterial', function(){}]);
+        angular.module('docsApp').controller('MainCtrl', [function () {}]);
+        </script>
+        <!-- endbuild -->
+</body>
+</html>

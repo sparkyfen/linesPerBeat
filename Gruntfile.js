@@ -24,7 +24,8 @@ module.exports = function (grunt) {
       app: require('./bower.json').appPath || 'app',
       lib: 'lib',
       test: 'test',
-      dist: 'dist'
+      dist: 'dist',
+      docs: 'docs'
     },
     express: {
       options: {
@@ -415,6 +416,12 @@ module.exports = function (grunt) {
         NODE_ENV: 'test'
       }
     },
+    apidoc: {
+      dist: {
+        src: "<%= yeoman.docs %>/src/",
+        dest: "<%= yeoman.docs %>/output/"
+      }
+    },
     todo: {
       options: {
         marks: [{
@@ -432,6 +439,7 @@ module.exports = function (grunt) {
         '<%= yeoman.lib %>/**/*.js',
         '<%= yeoman.test %>/**/*.js',
         '<%= yeoman.app %>/views/**/*.html',
+        '<%= yeoman.docs %>/src/**/*.js',
         'install.js',
         'bower.json'
       ],
@@ -522,6 +530,7 @@ module.exports = function (grunt) {
     'uglify',
     'rev',
     'usemin',
+    'apidoc',
     'todo'
   ]);
 

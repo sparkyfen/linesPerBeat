@@ -13,13 +13,19 @@ form.changePasswordForm .material-input-group input,
 form.editProfileForm .material-input-group input,
 form.linkForm .material-input-group input,
 form.uploadForm .material-input-group input,
-form.adminLoginForm .material-input-group input {
+form.adminRegisterForm .material-input-group input {
   width: 75%;
 }
 
 .divider {
   width: 1px;
   background-color: #FFFFFF;
+}
+
+.material-tile-right .fa-users {
+  float: right;
+  margin-right: 7%;
+  color: #4285f4;
 }
 
 .help-block {
@@ -29,7 +35,8 @@ form.adminLoginForm .material-input-group input {
   padding-top: 1em;
 }
 
-.help-block a {
+.help-block a,
+a#adminRegisterLink {
   color: #4285f4;
   text-decoration: none;
 }
@@ -38,6 +45,11 @@ img.userAvatar {
   width: 50px;
   height: 50px;
   border-radius: 32px;
+  -moz-border-radius: 32px;
+  -webkit-border-radius: 32px;
+  -moz-box-shadow: 0px 0px 2px #888;
+  -webkit-box-shadow: 0px 0px 2px #888;
+  box-shadow: 0px 0px 2px #888;
 }
 
 img#gruntLogo {

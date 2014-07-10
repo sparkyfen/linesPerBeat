@@ -3,8 +3,11 @@
 angular.module('linesPerBeatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute', 'ngAnimate', 'ngMaterial']).config(function ($routeProvider, $locationProvider) {
   $routeProvider
   .when('/', {
-    templateUrl: 'partials/main',
-    controller: 'MainCtrl'
+    templateUrl: 'partials/home',
+    controller: 'HomeCtrl'
+  }).when('/admin/register', {
+    templateUrl: 'partials/admin/register',
+    controller: 'AdminRegisterCtrl'
   }).when('/register', {
     templateUrl: 'partials/register',
     controller: 'RegisterCtrl'
@@ -26,16 +29,14 @@ angular.module('linesPerBeatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngR
   }).when('/admin', {
     templateUrl: 'partials/admin/main',
     controller: 'AdminMainCtrl'
-  }).when('/admin/login', {
-    templateUrl: 'partials/admin/login',
-    controller: 'AdminLoginCtrl'
   }).otherwise({
     redirectTo: '/'
   });
   $locationProvider.html5Mode(true);
 }).run(function (AdminService, $materialToast, $rootScope, $location) {
+  var adminRoutes = ['/admin', '/admin/register'];
   $rootScope.$on('$locationChangeStart', function (event) {
-    if($location.path() === '/admin') {
+    if(adminRoutes.indexOf($location.path()) !== -1) {
       AdminService.checkCookie().error(function (error) {
         $materialToast({
           template: error.message,
@@ -43,7 +44,7 @@ angular.module('linesPerBeatApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngR
           position: 'left bottom'
         });
         event.preventDefault();
-        $location.path('/admin/login');
+        $location.path('/login');
       });
     }
   });

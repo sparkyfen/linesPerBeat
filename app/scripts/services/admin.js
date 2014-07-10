@@ -2,16 +2,13 @@
 
 angular.module('linesPerBeatApp').service('AdminService', ['$http', function ($http) {
   return {
-    login: function(loginData) {
+    register: function(registerData) {
       return $http({
         method: 'POST',
-        url: '/api/admin/login',
-        data: loginData,
+        url: '/api/admin/register',
+        data: registerData,
         header: {'Content-Type': 'application/x-www-form-urlencoded'}
       });
-    },
-    logout: function() {
-      return $http.get('/api/admin/logout');
     },
     checkCookie: function() {
       return $http.get('/api/admin/checkCookie');

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('linesPerBeatApp').controller('MainCtrl', ['$scope', 'UserService', '$materialToast', function ($scope, UserService, $materialToast) {
+angular.module('linesPerBeatApp').controller('HomeCtrl', ['$scope', 'UserService', '$materialToast', function ($scope, UserService, $materialToast) {
   UserService.getParticipants().success(function (userList) {
     $scope.userList = userList;
   }).error(function (error) {
@@ -54,9 +54,7 @@ angular.module('linesPerBeatApp').controller('RegisterCtrl', ['$scope', 'UserSer
         position: 'left bottom'
       });
       $rootScope.$emit('isLoggedIn', {value: true, user: $scope.username});
-      $timeout(function () {
-        $location.path('/linkLastFm');
-      }, 700);
+      $location.path('/linkLastFm');
     }).error(function (error) {
       $materialToast({
         template: error.message,
@@ -89,9 +87,7 @@ angular.module('linesPerBeatApp').controller('LinkLastFmCtrl', ['$scope', 'UserS
         duration: 700,
         position: 'left bottom'
       });
-      $timeout(function () {
-        $location.path('/getGruntFile');
-      }, 700);
+      $location.path('/getGruntFile');
     }).error(function (error, statusCode) {
       $materialToast({
         template: error.message,

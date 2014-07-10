@@ -1,5 +1,31 @@
 'use strict';
 
+angular.module('linesPerBeatApp').controller('AdminRegisterCtrl', ['$scope', 'AdminService', '$rootScope', '$window', '$materialToast', '$location', function ($scope, AdminService, $rootScope, $window, $materialToast, $location) {
+  $scope.register = function() {
+    var registerData = {
+      username: $scope.username,
+      password: $scope.password,
+      confirmPassword: $scope.confirmPassword
+    };
+    AdminService.register(registerData).success(function (registerResp) {
+      $window.localStorage.setItem('user', $scope.username);
+      $materialToast({
+        template: registerResp.message,
+        duration: 700,
+        position: 'left bottom'
+      });
+      $rootScope.$emit('isLoggedIn', {value: true, user: $scope.username});
+      $location.path('/linkLastFm');
+    }).error(function (error) {
+      $materialToast({
+        template: error.message,
+        duration: 2000,
+        position: 'left bottom'
+      });
+    });
+  };
+}]);
+
 angular.module('linesPerBeatApp').controller('AdminMainCtrl', ['$scope', 'AdminService', '$location', '$materialToast', 'UserService', '$materialDialog', '$window', '$rootScope', function ($scope, AdminService, $location, $materialToast, UserService, $materialDialog, $window, $rootScope) {
   UserService.getParticipants().success(function (userList) {
     $scope.userList = userList;
@@ -19,7 +45,7 @@ angular.module('linesPerBeatApp').controller('AdminMainCtrl', ['$scope', 'AdminS
   $scope.openModal = function(username, index) {
     if(username === $window.localStorage.getItem('user')) {
       $materialToast({
-        template: 'Cannot delete your own account.',
+        template: 'Can\'t delete your own account.',
         duration: 2000,
         position: 'left bottom'
       });
@@ -54,29 +80,5 @@ angular.module('linesPerBeatApp').controller('AdminMainCtrl', ['$scope', 'AdminS
         }]
       });
     }
-  };
-}]);
-angular.module('linesPerBeatApp').controller('AdminLoginCtrl', ['$scope', 'AdminService', '$materialToast', '$rootScope', '$timeout', '$location', function ($scope, AdminService, $materialToast, $rootScope, $timeout, $location) {
-  $scope.adminLogin = function() {
-    var loginData = {
-      password: $scope.adminPassword
-    };
-    AdminService.login(loginData).success(function (loginResp) {
-      $materialToast({
-        template: loginResp.message,
-        duration: 700,
-        position: 'left bottom'
-      });
-      $rootScope.$emit('adminLoggedIn', {value: true});
-      $timeout(function () {
-        $location.path('/admin');
-      }, 700);
-    }).error(function (error) {
-      $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
-      });
-    });
   };
 }]);

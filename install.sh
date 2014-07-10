@@ -1,10 +1,10 @@
 green=$(tput setaf 2)
 reset=$(tput sgr0)
-echo -e "Copying Development Template..."
+echo "Copying Development Template..."
 cp lib/config/env/development.js.template lib/config/env/development.js
-echo -e "Copying Test Template..."
+echo "Copying Test Template..."
 cp lib/config/env/test.js.template lib/config/env/test.js
-echo -e "Copying Production Template..."
+echo "Copying Production Template..."
 cp lib/config/env/production.js.template lib/config/env/production.js
-echo -e "${green}Don't forget to update the settings files within lib/config/env.${reset}"
-node install.js
+echo "${green}Don't forget to update the settings files within lib/config/env.${reset}"
+echo "${green}Make sure to run node install.js after the settings files are updated.${reset}"

@@ -21,12 +21,19 @@
           </p>
         </div>
         <div class="material-tile-right">
-          <h5>Lines Per Minute: {{user.linesPerMinute}}</h5>
+          <!-- TODO Add a tooltip to the Admin icon -->
+          <i class="fa fa-users fa-1" ng-show="user.admin"></i>
+          <center>
+            <h5>LPM: <span>{{user.linesPerMinute}}</span></h5>
+          </center>
         </div>
       </material-item>
       <material-item>
         <div class="material-tile-content" ng-show="userList.length === 0" ng-cloak>
-          <h1>No User's Registered! :(</h1>
+          <center>
+            <h1>Hackathon Time!</h1>
+            <h2>Create the first account <a href="/admin/register" id="adminRegisterLink">here</a>!</h2>
+          </center>
         </div>
       </material-item>
     </div>

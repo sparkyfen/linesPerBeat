@@ -1,10 +1,10 @@
 var colors = require('colors');
-
+var uuid = require('node-uuid');
 var settings = require('./lib/config/config');
 var db = require('./lib/database');
 db.initialize('couchdb');
 
-var userView = {views: {"all": {"map": "function(doc) {emit(null, doc)}","reduce": "_count"},"by_username": {"map": "function(doc) {emit(doc.username, doc)}","reduce": "_count"}}};
+var userView = {views: {"all": {"map": "function(doc) {emit(null, doc)}","reduce": "_count"},"by_username": {"map": "function(doc) {emit(doc.username, doc)}","reduce": "_count"}, "by_admins": {"map": "function(doc) { if(doc.admin) {emit(doc.username, doc)}}","reduce": "_count"}}};
 var childListView = {views: {"all": {"map": "function(doc) {emit(null, doc)}","reduce": "_count"},"by_pid": {"map": "function(doc) {emit(doc.pid, doc)}","reduce": "_count"}}};
 
 db.createDB(settings.couchdb.users, function (err, body) {

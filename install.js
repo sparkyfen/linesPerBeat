@@ -1,5 +1,4 @@
 var colors = require('colors');
-var uuid = require('node-uuid');
 var settings = require('./lib/config/config');
 var db = require('./lib/database');
 db.initialize('couchdb');

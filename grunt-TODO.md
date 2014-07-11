@@ -11,13 +11,12 @@
 ## lib/controllers/user.js
 
 -  **TODO** `(line 37)`  Need to finish getting the signal catcher for the listeners working.
--  **TODO** `(line 257)`  Update avatars for users.
 
 ## lib/database/index.js
 
 -  **TODO** `(line 17)`  Need to add creation of child process DB and inserting into DB and search by PID.
 -  **TODO** `(line 35)`  Add Dyanmo initialization.
--  **TODO** `(line 159)`  Delete process from DB when the user is deleted if there is a process running for that user. Implement deleteProcessByUsername().
+-  **TODO** `(line 174)`  Delete process from DB when the user is deleted if there is a process running for that user. Implement deleteProcessByUsername().
 
 ## app/views/partials/home.html
 

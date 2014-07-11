@@ -3,8 +3,10 @@
 var should = require('should');
 var app = require('../../../server');
 var request = require('supertest');
+var fs = require('fs');
 var uuid = require('node-uuid');
 var assert = require('assert');
+var nock = require('nock');
 var bcrypt = require('bcrypt');
 var colors = require('colors');
 var settings = require('../../../lib/config/config');
@@ -48,7 +50,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function(error, res) {
         if (error) {
-          console.error(res.body.message.red);
           return done(error);
         }
         cookie = res.headers['set-cookie'];
@@ -56,6 +57,15 @@ describe('Lines Per Beat API', function () {
         done();
       });
     });
+    // Mock the Last.FM user get.info request.
+    nock('http://ws.audioscrobbler.com')
+    .get('/2.0?user=lastfm&method=user.getInfo&api_key='+settings.lastfm.apiKey+'&format=json')
+    .reply(200, {"user":{"name":"lastfm","realname":"","image":[{"#text":"","size":"small"},{"#text":"","size":"medium"},{"#text":"","size":"large"},{"#text":"","size":"extralarge"}],"url":"http:\/\/www.last.fm\/user\/lastfm","id":"375","country":"","age":"","gender":"","subscriber":"0","playcount":"8378","playlists":"1","bootstrap":"0","registered":{"#text":"2002-10-29 00:00","unixtime":"1035849600"},"type":"user"}});
+    // Mock the Imgur call for file uploading.
+    nock('https://api.imgur.com', {reqheaders: {
+    'Authorization': 'Client-ID mockClientId'
+    }}).post('/3/upload')
+    .reply(200, {"data":{"id":"rrwkbGo","title":null,"description":null,"datetime":1405057112,"type":"image\/jpeg","animated":false,"width":640,"height":972,"size":53957,"views":0,"bandwidth":0,"favorite":false,"nsfw":null,"section":null,"deletehash":"u6w57wEeV7YfDUh","link":"http:\/\/i.imgur.com\/rrwkbGo.jpg"},"success":true,"status":200});
   });
 
   afterEach(function (done) {
@@ -94,7 +104,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.error(res.body.message.red);
           return done(error);
         }
         res.body.should.be.instanceof(Array);
@@ -111,7 +120,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.message, 'Logged out.');
@@ -133,7 +141,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.message, 'Registered.');
@@ -153,7 +160,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.message, 'User already exists.');
@@ -173,7 +179,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.message, 'Passwords don\'t match.');
@@ -190,7 +195,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.username, 'mockUser');
@@ -204,7 +208,6 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.message, 'Please sign in.');
@@ -222,10 +225,109 @@ describe('Lines Per Beat API', function () {
       .expect('Content-Type', /json/)
       .end(function (error, res) {
         if (error) {
-          console.log(res.body.message.red);
           return done(error);
         }
         assert.equal(res.body.message, 'Profile updated.');
+        done();
+      });
+    });
+  });
+  describe('POST /api/user/changePassword', function () {
+    it('should successfully change the user\'s password', function (done) {
+      request(app)
+      .post('/api/user/changePassword')
+      .set('cookie', cookie)
+      .send({oldPassword: 'mockPassword', newPassword: 'mockPassword2', confirmNewPassword: 'mockPassword2'})
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (error, res) {
+        if (error) {
+          return done(error);
+        }
+        assert.equal(res.body.message, 'Password updated.');
+        done();
+      });
+    });
+  });
+  describe('POST /api/user/linkAccounts', function () {
+    it('should successfully link the user\'s Last.FM account', function (done) {
+      request(app)
+      .post('/api/user/linkAccounts')
+      .set('cookie', cookie)
+      .send({lastfmUser: 'lastfm'})
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (error, res) {
+        if (error) {
+          return done(error);
+        }
+        assert.equal(res.body.message, 'Accounts linked.');
+        done();
+      });
+    });
+  });
+  describe('GET /api/user/gruntfile.js', function () {
+    it('should successfully download the grunt file', function (done) {
+      request(app)
+      .get('/api/user/gruntfile.js')
+      .set('cookie', cookie)
+      .expect(200)
+      .expect('Content-Type', /javascript/)
+      .end(function (error, res) {
+        if (error) {
+          return done(error);
+        }
+        assert.equal(res.headers['content-disposition'], 'attachment; filename="gruntFilemockUser.js"');
+        done();
+      });
+    });
+  });
+  describe('POST /api/user/updateLines', function () {
+    it('should successfully update the user\'s lines per minute', function (done) {
+      request(app)
+      .post('/api/user/updateLines')
+      .send({currentTime: Date.now(), linesAdded: 20, username: 'mockUser'})
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (error, res) {
+        if (error) {
+          return done(error);
+        }
+        assert.equal(res.body.message, 'Lines updated.');
+        done();
+      });
+    });
+  });
+  describe('GET /api/user/checkCookie', function () {
+    it('should validate the user\'s cookie', function (done) {
+      request(app)
+      .get('/api/user/checkCookie')
+      .set('cookie', cookie)
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (error, res) {
+        if (error) {
+          return done(error);
+        }
+        assert.equal(res.body.message, 'Valid.');
+        done();
+      });
+    });
+  });
+  describe('POST /api/user/uploadAvatar', function () {
+    it('should update an avatar to Imgur', function (done) {
+      request(app)
+      .post('/api/user/uploadAvatar')
+      .set('cookie', cookie)
+      .send({'url': 'http://i.imgur.com/BS2iaX2.jpg'})
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end(function (error, res) {
+        if (error) {
+          return done(error);
+        }
+        res.should.have.status(200);
+        assert.equal(res.body.message, 'Avatar updated.');
         done();
       });
     });

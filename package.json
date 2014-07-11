@@ -84,6 +84,6 @@
   },
   "scripts": {
     "install": "sh install.sh",
-    "test": "grunt test"
+    "test": "mocha test/server/**/*.js"
   }
 }

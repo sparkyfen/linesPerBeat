@@ -2,6 +2,8 @@ LinesPerBeat
 =============
 Open-Source Hackathon Leaderboard
 
+[![Build Status](https://travis-ci.org/brutalhonesty/linesPerBeat.svg?branch=master)](https://travis-ci.org/brutalhonesty/linesPerBeat)
+
 Version
 -------
 0.1

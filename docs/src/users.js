@@ -68,4 +68,23 @@
  *
  */
 
-// TODO Add more documentation.
+/**
+ * @api {get} /api/user/logout Logout
+ * @apiVersion 1.0.0
+ * @apiName Logout
+ * @apiGroup User
+ * @apiPermission user
+ *
+ * @apiDescription Logs the user out.
+ *
+ *
+ * @apiExample CURL example:
+ *      curl -X POST 'http://example.com/api/user/logout'
+ *
+ * @apiSuccess {String} message The successful signin message.
+ *
+ * @apiSuccessExample Success-Response (example):
+ *     HTTP/1.1 200 OK
+ *     {"message":"Logged out."}
+ *
+ */

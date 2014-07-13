@@ -79,7 +79,7 @@
  *
  *
  * @apiExample CURL example:
- *      curl -X POST 'http://example.com/api/user/logout'
+ *      curl -X GET 'http://example.com/api/user/logout'
  *
  * @apiSuccess {String} message The successful signin message.
  *
@@ -87,4 +87,29 @@
  *     HTTP/1.1 200 OK
  *     {"message":"Logged out."}
  *
+ */
+
+/**
+ * @api {get} /api/user/checkCookie CheckCookie
+ * @apiVersion 1.0.0
+ * @apiName CheckCookie
+ * @apiGroup User
+ * @apiPermission user
+ *
+ * @apiDescription Check's the user's cookie
+ *
+ * @apiExample CURL example:
+ *      curl -X GET 'http://example.com/api/user/checkCookie'
+ *
+ * @apiSuccess {String} message The successful signin message.
+ *
+ * @apiSuccessExample Success-Response (example):
+ *     HTTP/1.1 200 OK
+ *     {"message":"Valid."}
+ *
+ * @apiError (UnAuthorized 401) PleaseSignIn The user needs to sign in again.
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 401 UnAuthorized
+ *     {"message":"Please sign in."}
  */

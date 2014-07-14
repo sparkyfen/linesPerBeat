@@ -1,0 +1,10 @@
+node_modules
+public
+.tmp
+.sass-cache
+client/bower_components
+dist
+/server/config/local.env.js
+agreement.txt
+server/config/environment/development.js
+server/config/environment/production.js

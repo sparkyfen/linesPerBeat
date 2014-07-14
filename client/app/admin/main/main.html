@@ -1,0 +1,22 @@
+<div>
+  <material-card>
+    <h2>Admin Panel</h2>
+  </material-card>
+  <material-card>
+    <material-list>
+      <material-item ng-repeat="user in userList" ng-cloak>
+        <div class="material-tile-left">
+          <h2>{{user.username}}</h2>
+        </div>
+        <div class="material-tile-right">
+          <button type="button" class="material-button material-button-raised material-theme-red" ng-click="openModal(user.username, $index, $event)">Delete</button>
+        </div>
+      </material-item>
+      <material-item ng-show="userList.length === 0" ng-cloak>
+        <div class="material-tile-content">
+          <h1>No User's Registered! :(</h1>
+        </div>
+      </material-item>
+    </material-list>
+  </material-card>
+</div>

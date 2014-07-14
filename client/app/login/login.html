@@ -1,0 +1,16 @@
+<div>
+  <material-card>
+    <h2>Login</h2>
+    <form ng-submit="login()" class="form-horizontal loginForm" name="loginForm">
+      <div class="material-input-group material-input-group-theme-light">
+        <label>Username</label>
+        <input type="text" ng-model="username" required autofocus>
+      </div>
+      <div class="material-input-group material-input-group-theme-light">
+        <label>Password</label>
+        <input type="password" ng-model="password" required>
+      </div>
+      <button type="submit" class="material-button material-button-raised material-button-colored">Submit</button>
+    </form>
+  </material-card>
+</div>

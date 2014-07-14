@@ -23,7 +23,8 @@ module.exports = function (grunt) {
       // configurable paths
       client: require('./bower.json').appPath || 'client',
       dist: 'dist',
-      docs: require('./bower.json').appPath  + '/docs' || 'client' + '/docs'
+      docs: (require('./bower.json').appPath|| 'client') + '/docs',
+      server: 'server'
     },
     express: {
       options: {
@@ -428,13 +429,14 @@ module.exports = function (grunt) {
         file: 'grunt-TODO.md'
       },
       src: [
-        '<%= yeoman.app %>/scripts/**/*.js',
-        '!<%= yeoman.app %>/scripts/lib/**/*.js',
-        '<%= yeoman.app %>/styles/**/*.css',
-        '<%= yeoman.app %>/styles/**/*.scss',
-        '<%= yeoman.lib %>/**/*.js',
-        '<%= yeoman.test %>/**/*.js',
-        '<%= yeoman.app %>/views/**/*.html',
+        '<%= yeoman.client %>/*.html',
+        '<%= yeoman.client %>/app/**/*.js',
+        '<%= yeoman.client %>/components/lib/**/*.js',
+        '!<%= yeoman.client %>/assets/**/*',
+        '<%= yeoman.client %>/app/**/*.css',
+        '<%= yeoman.client %>/app/**/*.scss',
+        '<%= yeoman.client %>/app/**/*.html',
+        '<%= yeoman.server %>/**/*.js',
         '<%= yeoman.docs %>/src/**/*.js',
         'install.js',
         'bower.json'

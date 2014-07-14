@@ -1,6 +1,7 @@
 {
-  "name": "lines-per-beatv2",
-  "version": "0.0.0",
+  "name": "linesperbeat",
+  "version": "0.0.1",
+  "description": "Hackathon LeaderBoard",
   "dependencies": {
     "angular": ">=1.2.*",
     "json3": "~3.3.1",

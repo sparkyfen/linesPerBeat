@@ -1,6 +1,6 @@
 var colors = require('colors');
 var settings = require('./server/config/environment');
-var db = require('./server/componets/database');
+var db = require('./server/components/database');
 db.initialize('couchdb');
 
 var userView = {views: {"all": {"map": "function(doc) {emit(null, doc)}","reduce": "_count"},"by_username": {"map": "function(doc) {emit(doc.username, doc)}","reduce": "_count"}, "by_admins": {"map": "function(doc) { if(doc.admin) {emit(doc.username, doc)}}","reduce": "_count"}}};

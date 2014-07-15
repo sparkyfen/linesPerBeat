@@ -16,20 +16,15 @@
 
 -  **TODO** `(line 24)`  Add a tooltip to the Admin icon -->
 
-## server/api/linkAccounts/linkAccounts.controller.js
-
--  **TODO** `(line 33)`  Need to finish getting the signal catcher for the listeners working.
-
 ## server/api/updateProfile/updateProfile.controller.js
 
 -  **TODO** `(line 55)`  Kick off Last.FM Listener on updated profile by killing old process and starting new one.
 
+## server/app.js
+
+-  **TODO** `(line 66)`  Need to finish getting the signal catcher for the listeners working.
+
 ## server/components/database/index.js
 
--  **TODO** `(line 16)`  Need to add creation of child process DB and inserting into DB and search by PID.
--  **TODO** `(line 34)`  Add Dyanmo initialization.
--  **TODO** `(line 173)`  Delete process from DB when the user is deleted if there is a process running for that user. Implement deleteProcessByUsername().
-
-## server/components/gruntfile/Gruntfile.js
-
--  **TODO** `(line 38)` 
+-  **TODO** `(line 32)`  Add Dyanmo initialization.
+-  **TODO** `(line 171)`  Delete process from DB when the user is deleted if there is a process running for that user. Implement deleteProcessByUsername().

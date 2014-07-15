@@ -14,7 +14,7 @@
         <label>Last.FM Username</label>
         <input type="text" ng-model="lastfmUser" required>
       </div>
-      <button type="submit" class="material-button material-button-raised material-button-colored">Submit</button>
+      <button type="submit" class="material-button material-button-raised material-button-colored" offline-disabled>Submit</button>
     </form>
   </material-card>
   <material-card>
@@ -27,14 +27,14 @@
       <div class="material-input-group material-input-group-theme-light">
         <input type="file" file-model="avatarFile" required>
       </div>
-      <button type="submit" class="material-button material-button-raised material-button-colored" ng-click="upload()">Upload</button>
+      <button type="submit" class="material-button material-button-raised material-button-colored" ng-click="upload()" offline-disabled>Upload</button>
     </form>
     <form class="form-horizontal uploadForm" ng-show="!showUpload">
       <div class="material-input-group material-input-group-theme-light">
         <label>URL</label>
         <input type="text" ng-model="url" required>
       </div>
-      <button type="submit" class="material-button material-button-raised material-button-colored" ng-click="upload()">Submit</button>
+      <button type="submit" class="material-button material-button-raised material-button-colored" ng-click="upload()" offline-disabled>Submit</button>
     </form>
   </material-card>
 </div>

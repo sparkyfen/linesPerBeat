@@ -90,7 +90,8 @@
     "should": "~3.3.1",
     "grunt-todo": "^0.3.0",
     "grunt-apidoc": "^0.6.0",
-    "nock": "^0.42.1"
+    "nock": "^0.42.1",
+    "grunt-wiredep": "^1.8.0"
   },
   "engines": {
     "node": ">=0.10.0"

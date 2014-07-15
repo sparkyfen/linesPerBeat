@@ -12,9 +12,13 @@ angular.module('linesPerBeatApp')
         });
       });
       Offline.on('confirmed-up', function () {
-        $('.offline').fadeOut('fast', function () {
+        if($('.offline').length === 0) {
           element.fadeIn('fast');
-        });
+        } else {
+          $('.offline').fadeOut('fast', function () {
+            element.fadeIn('fast');
+          });
+        }
       });
     }
   };

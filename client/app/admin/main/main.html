@@ -9,7 +9,7 @@
           <h2>{{user.username}}</h2>
         </div>
         <div class="material-tile-right">
-          <button type="button" class="material-button material-button-raised material-theme-red" ng-click="openModal(user.username, $index, $event)">Delete</button>
+          <button type="button" class="material-button material-button-raised material-theme-red" ng-click="openModal(user.username, $index, $event)" offline-disabled>Delete</button>
         </div>
       </material-item>
       <material-item ng-show="userList.length === 0" ng-cloak>

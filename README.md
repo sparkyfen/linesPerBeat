@@ -3,6 +3,7 @@ LinesPerBeat
 Open-Source Hackathon Leaderboard
 
 [![Build Status](https://travis-ci.org/brutalhonesty/linesPerBeat.svg?branch=master)](https://travis-ci.org/brutalhonesty/linesPerBeat)
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 Version
 -------

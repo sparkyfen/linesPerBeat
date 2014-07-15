@@ -3,10 +3,7 @@
 var validator = require('validator');
 var bcrypt = require('bcrypt');
 var uuid = require('node-uuid');
-var fs = require('fs');
-var url = require('url');
 var db = require('../../components/database');
-var settings = require('../../config/environment');
 
 db.initialize('couchdb');
 
@@ -79,29 +76,18 @@ exports.index = function(req, res) {
         if(reply.rows.length > 0) {
           return res.json(400, {message: 'User already exists.'});
         }
-        // Create grunt file and populate it with the username and URL for the hackathon.
-        var gruntFile = fs.readFileSync(__dirname + '/../../components/gruntfile/Gruntfile.js', {encoding: 'utf8'});
-        require('dns').lookup(require('os').hostname(), function (error, address) {
+        // Create user
+        db.insert(users, userId, user, function (error) {
           if(error) {
             console.log(error);
             return res.json(500, {message: 'Problem registering user ' + username + ', please try again.'});
           }
-          var protocol = settings.port === 443 ? "https://" : "http://";
-          var siteURL = url.resolve(protocol + address + ':' + settings.port, '/api/user/updateLines');
-          user.gruntFile = gruntFile.replace("&username&", username).replace('&siteURL&', siteURL);
-          // Create user
-          db.insert(users, userId, user, function (error) {
-            if(error) {
-              console.log(error);
-              return res.json(500, {message: 'Problem registering user ' + username + ', please try again.'});
-            }
-            req.session.username = username;
-            // If an admin was previously signed in, we will delete their session and update the session with the new user.
-            if(req.session.isAdmin) {
-              delete req.session.isAdmin;
-            }
-            return res.json({message: 'Registered.'});
-          });
+          req.session.username = username;
+          // If an admin was previously signed in, we will delete their session and update the session with the new user.
+          if(req.session.isAdmin) {
+            delete req.session.isAdmin;
+          }
+          return res.json({message: 'Registered.'});
         });
       });
     });

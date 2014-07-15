@@ -1,6 +1,7 @@
 'use strict';
 
 var validator = require('validator');
+var uuid = require('node-uuid');
 var db = require('../../components/database');
 var settings = require('../../config/environment');
 var LastFmNode = require('lastfm').LastFmNode;
@@ -22,54 +23,57 @@ var childProcesses = db.getChildTable();
  * @param lastfmUser The last.fm username to listen to.
  */
 function kickOffFMListener(lastfmUser, username) {
-  var listener = spawn('node', [__dirname + '/lastfmListener.js', '-l', lastfmUser, '-u', username]);
-  console.log('Running new Last.FM Listener Instance with PID ' + listener.pid);
-  listener.stdout.on('data', function (data) {
-    console.log('stdout: ' + data);
-  });
-  listener.stderr.on('data', function (data) {
-    console.log('stderr: ' + data);
-  });
-  // TODO Need to finish getting the signal catcher for the listeners working.
-  listener.on('SIGINT', function () {
-    console.log('Closing Process with PID' + listener.pid);
-    db.deleteProcessByPid(listener.pid, function (error, reply) {
-      if(error) {
-        return console.log(error);
-      }
-      console.log(reply);
-    });
-    listener.exit();
-  });
-  listener.on('SIGKILL', function () {
-    console.log('Closing Process with PID' + listener.pid);
-    db.deleteProcessByPid(listener.pid, function (error, reply) {
-      if(error) {
-        return console.log(error);
-      }
-      console.log(reply);
-    });
-    listener.exit();
-  });
-  listener.on('exit', function (code, signal) {
-    console.log(code);
-    console.log(signal);
-    db.deleteProcessByPid(listener.pid, function (error, reply) {
-      if(error) {
-        return console.log(error);
-      }
-      console.log(reply);
-    });
-  });
-
-  var user = {
-    lastfmUser: lastfmUser,
-    username: username
-  };
-  db.insert(childProcesses, listener.pid, user, function (error) {
+  db.searchProcessByAll(function (error, reply) {
     if(error) {
       return console.log(error);
     }
+    var updated = false;
+    var listener = spawn('node', [__dirname + '/lastfmListener.js', '-l', lastfmUser, '-u', username]);
+    console.log('Running new Last.FM Listener Instance with PID ' + listener.pid);
+    listener.stdout.on('data', function (data) {
+      console.log('stdout: ' + data);
+    });
+    listener.stderr.on('data', function (data) {
+      console.log('stderr: ' + data);
+    });
+    listener.on('exit', function (code, signal) {
+      console.log('Closing Process with PID ' + listener.pid);
+      db.deleteProcessByPid(listener.pid, function (error, reply) {
+        if(error) {
+          return console.log(error);
+        }
+      });
+    });
+
+    var user = {
+      lastfmUser: lastfmUser,
+      username: username,
+      pid: listener.pid
+    };
+    db.searchProcessByAll(function (error, reply) {
+      if(error) {
+        return console.log(error);
+      }
+      var updated = false;
+      for(var i = 0; i < reply.rows.length; i++) {
+        var process = reply.rows[i].value;
+        if(process.username === user.username) {
+          updated = true;
+          db.insert(childProcesses, process._id, user, function (error) {
+            if(error) {
+              return console.log(error);
+            }
+          });
+        }
+      }
+      if(!updated) {
+        db.insert(childProcesses, uuid.v4(), user, function (error) {
+          if(error) {
+            return console.log(error);
+          }
+        });
+      }
+    });
   });
 }
 

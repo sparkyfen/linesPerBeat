@@ -87,12 +87,12 @@ describe('GET /api/user/gruntfile.js', function() {
     .get('/api/user/gruntfile.js')
     .set('cookie', cookie)
     .expect(200)
-    .expect('Content-Type', /javascript/)
+    .expect('Content-Type', /zip/)
     .end(function (error, res) {
       if (error) {
         return done(error);
       }
-      assert.equal(res.headers['content-disposition'], 'attachment; filename="gruntFilemockUser.js"');
+      assert.equal(res.headers['content-disposition'], 'attachment; filename="gruntFilemockUser.zip"');
       done();
     });
   });

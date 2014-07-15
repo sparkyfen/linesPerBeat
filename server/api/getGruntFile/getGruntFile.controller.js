@@ -1,6 +1,10 @@
 'use strict';
 
 var fs = require('fs');
+var url = require('url');
+var UglifyJS = require("uglify-js");
+var zip = new require('node-zip')();
+var settings = require('../../config/environment');
 var db = require('../../components/database');
 
 db.initialize('couchdb');
@@ -17,19 +21,36 @@ exports.index = function(req, res) {
       return res.json(500, {message: 'Problem getting grunt file.'});
     }
     var user = reply.rows[0].value;
-    var gruntFile = user.gruntFile;
-    var fileName = 'gruntFile' + user.username + '.js';
-    var filePath = '/tmp/' + fileName;
-    fs.writeFileSync(filePath, gruntFile, {encoding: 'utf8'});
-    res.download(filePath, fileName, function (error) {
+    var gruntFile = fs.readFileSync(__dirname + '/../../components/gruntfile/Gruntfile.js', {encoding: 'utf8'});
+    require('dns').lookup(require('os').hostname(), function (error, address) {
       if(error) {
-        if(res.headersSent) {
-          return res.send(400);
-        } else {
-          return res.json(400, {message: 'Missing grunt file.'});
-        }
+        console.log(error);
+        return res.json(500, {message: 'Problem getting grunt file.'});
       }
-      fs.unlinkSync(filePath);
+      var protocol = settings.port === 443 ? "https://" : "http://";
+      var siteURL = url.resolve(protocol + address + ':' + settings.port, '/api/user/updateLines');
+      gruntFile = gruntFile.replace(/&username&/g, username).replace(/&siteURL&/g, siteURL);
+      gruntFile = UglifyJS.minify(gruntFile, {fromString: true}).code;
+      var packageFile = fs.readFileSync(__dirname + '/../../components/gruntFile/package.json', {encoding: 'utf8'});
+      var options = {base64: false, compression:'DEFLATE'};
+      var fileName = 'gruntFile' + user.username + '.js';
+      var zipName = 'gruntFile' + user.username + '.zip';
+      var zipPath = '/tmp/' + zipName;
+      zip.file(fileName, gruntFile);
+      zip.file('package.json', packageFile);
+      var data = zip.generate(options);
+      fs.writeFileSync(zipPath, data, 'binary');
+      res.download(zipPath, zipName, function (error) {
+        fs.unlinkSync(zipPath);
+        if(error) {
+          console.log(error);
+          if(res.headersSent) {
+            return res.send(400);
+          } else {
+            return res.json(400, {message: 'Missing grunt file.'});
+          }
+        }
+      });
     });
   });
 };

@@ -4,7 +4,6 @@
       <material-item ng-repeat="user in userList | orderBy:'linesPerMinute':true" ng-cloak>
         <div class="material-tile-left">
           <img ng-src="{{user.avatar}}" alt="User Avatar" class="userAvatar">
-          <center>{{user.linesPerMinute}}</center>
         </div>
         <div class="material-tile-content">
           <h2>{{user.username}}</h2>
@@ -12,18 +11,19 @@
           <h3 ng-show="user.lastfm.currentSong.artist">
             Current Song: <a ng-href="{{user.lastfm.currentSong.url}}" target="_blank">{{user.lastfm.currentSong.artist}} - {{user.lastfm.currentSong.song}}</a> <img src="assets/images/icon_eq.gif" alt="Equalizer Icon">
           </h3>
-          <p ng-show="user.lastfm.currentSong.artist">
-            Last Updated: {{user.lastfm.currentSong.lastUpdated | date: 'medium'}}
-          </p>
           <p ng-show="!user.lastfm.currentSong.artist">
-            Current Song: N/A
+            <span ng-show="!user.lastfm.currentSong.song">Current Song: N/A</span>
             <br>
-            Last Updated: N/A
+            <span ng-show="!user.lastfm.currentSong.lastUpdated">Last Updated: N/A</span>
+          </p>
+          <p ng-show="user.lastfm.currentSong.lastUpdated">
+            Last Updated: {{user.lastfm.currentSong.lastUpdated | date: 'medium'}}
           </p>
         </div>
         <div class="material-tile-right">
           <!-- TODO Add a tooltip to the Admin icon -->
           <i class="fa fa-users fa-2x" ng-show="user.admin"></i>
+          <center>{{user.linesPerMinute | number:2}}</center>
         </div>
       </material-item>
       <material-item>

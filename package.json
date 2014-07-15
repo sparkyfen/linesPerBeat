@@ -29,7 +29,10 @@
     "mime": "^1.2.11",
     "node-uuid": "^1.4.1",
     "multer": "^0.1.2",
-    "argparse": "^0.1.15"
+    "argparse": "^0.1.15",
+    "is-running": "^1.0.5",
+    "node-zip": "^1.1.0",
+    "uglify-js": "^2.4.15"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
@@ -91,7 +94,8 @@
     "grunt-todo": "^0.3.0",
     "grunt-apidoc": "^0.6.0",
     "nock": "^0.42.1",
-    "grunt-wiredep": "^1.8.0"
+    "grunt-wiredep": "^1.8.0",
+    "grunt-shell": "^0.7.0"
   },
   "engines": {
     "node": ">=0.10.0"

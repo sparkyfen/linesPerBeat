@@ -25,7 +25,7 @@ db.createDB(settings.couchdb.users, function (err, body) {
       }
       var childProcesses = db.getChildTable();
       // Insert view to make a lookup calls with.
-      db.insert(childProcesses, '_design/childProcessesView', childProcesses, function (err, body) {
+      db.insert(childProcesses, '_design/childProcesses', childListView, function (err, body) {
         if(err && err.status_code !== 409) {
           console.log('Error recreating database.'.red);
           console.log(err);

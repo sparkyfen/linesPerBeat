@@ -1,18 +1,43 @@
 'use strict';
 
-var updateLinesTask = 'updateLines:&username&';
-var config = require('../lib/config/config');
-
 module.exports = function (grunt) {
+
+  function diffStats (err, stdout, stderr, callback) {
+    if(err) {
+      return callback(err);
+    }
+    var gitOutputArr = stdout.split('\n');
+    var changedGitLine = gitOutputArr[gitOutputArr.length - 2];
+    var changedLineArr = changedGitLine.split(' ');
+    var insertions = 0;
+    var deletions = 0;
+    for(var i = 0; i < changedLineArr.length; i++) {
+      if(changedLineArr[i].indexOf('insertions') !== -1) {
+        insertions = parseInt(changedLineArr[i - 1]);
+      }
+      if(changedLineArr[i].indexOf('deletions') !== -1) {
+        deletions = parseInt(changedLineArr[i - 1]);
+      }
+    }
+    if(isNaN(insertions) || isNaN(deletions)) {
+      grunt.log.error('Issue getting insertions and deletions.');
+      return callback();
+    }
+    grunt.option('insertions', insertions);
+    grunt.option('deletions', deletions);
+    grunt.task.run('updateLines');
+    return callback();
+  }
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     watch: {
       scripts: {
-        files: ['**/*', '!GruntFile.js', '!node_modules/**/*'],
-        tasks: ['jshint:all', updateLinesTask],
+        files: ['**/*', '!GruntFile.js', '!gruntFile&username&.js', '!node_modules/**/*'],
+        tasks: ['jshint:all', 'shell'],
         options: {
           spawn: false,
-          livereload: true
+          livereload: 35730
         }
       }
     },
@@ -24,8 +49,21 @@ module.exports = function (grunt) {
       },
       all: [
         '**/*.js',
+        '!GruntFile.js',
+        '!gruntFile&username&.js',
         '!node_modules/**/*'
       ]
+    },
+    shell: {
+      gitdiff: {
+        command: 'git diff --stat',
+        options: {
+          stderr: false,
+          stdout: false,
+          failOnError: true,
+          callback: diffStats
+        }
+      }
     },
     http: {
       updateLines: {
@@ -33,9 +71,9 @@ module.exports = function (grunt) {
           url: '&siteURL&',
           method: 'POST',
           form: {
-            username: username,
+            username: '&username&',
             currentTime: Date.now(),
-            linesAdded: // TODO
+            linesAdded: null
           }
         }
       }
@@ -43,8 +81,15 @@ module.exports = function (grunt) {
   });
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
-  grunt.registerTask('updateLines', 'Updates the user\'s lines per minute.', function (username) {
+  grunt.registerTask('updateLines', 'Updates the user\'s lines per minute.', function () {
     grunt.task.requires('jshint:all');
+    grunt.task.requires('shell:gitdiff');
+    var oldLinesAdded = grunt.config.get('http.updateLines.options.form.linesAdded');
+    var newLinesAdded = grunt.option('insertions') - grunt.option('deletions');
+    grunt.log.writeln('Old Lines Added: ' + oldLinesAdded);
+    grunt.log.writeln('New Lines Added: ' + newLinesAdded);
+    grunt.config.set('http.updateLines.options.form.linesAdded', newLinesAdded - oldLinesAdded);
+    grunt.task.run('http:updateLines');
   });
-  grunt.registerTask('default', ['watch']);
+  grunt.registerTask('default', ['openport:watch.options.livereload:35730', 'watch']);
 };

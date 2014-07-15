@@ -8,3 +8,4 @@ dist
 agreement.txt
 server/config/environment/development.js
 server/config/environment/production.js
+gruntFilevolvox.js

@@ -13,8 +13,6 @@ function allowedDBTypes(type) {
   }
 }
 
-// TODO Need to add creation of child process DB and inserting into DB and search by PID.
-
 exports.initialize = function(type) {
   if(type === undefined) {
     throw new Error('Missing database type.');
@@ -132,7 +130,7 @@ exports.getUser = function(userId, callback) {
 exports.searchByUser = function(username, callback) {
   switch(this.type) {
     case COUCHDB:
-    this.users.view('users', 'by_username', {reduce: false, startkey: username, endkey: username + '\u9999'}, function (error, reply) {
+    this.users.view('users', 'by_username', {reduce: false, startkey: username, endkey: username}, function (error, reply) {
       if(error) {
         return callback(error);
       }
@@ -163,7 +161,7 @@ exports.deleteUserByUsername = function(username, callback) {
   switch(this.type) {
     case COUCHDB:
     var _self = this;
-    _self.users.view('users', 'by_username', {reduce: false, startkey: username, endkey: username + '\u9999'}, function (error, reply) {
+    _self.users.view('users', 'by_username', {reduce: false, startkey: username, endkey: username}, function (error, reply) {
       if(error) {
         return callback(error);
       }
@@ -184,11 +182,26 @@ exports.deleteUserByUsername = function(username, callback) {
   }
 };
 
+exports.searchProcessByAll = function(callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.childProcesses.view('childProcesses', 'all', {reduce: false}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dyanmo DB has not been implemented yet.');
+  }
+};
+
 exports.deleteProcessByPid = function(pid, callback) {
   switch(this.type) {
     case COUCHDB:
     var _self = this;
-    _self.childProcesses.view('childProcesses', 'by_pid', {reduce: false, startkey: pid, endkey: pid + '\u9999'}, function (error, reply) {
+    _self.childProcesses.view('childProcesses', 'by_pid', {reduce: false, startkey: pid, endkey: pid}, function (error, reply) {
       if(error) {
         return callback(error);
       }

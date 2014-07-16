@@ -20,6 +20,7 @@ describe('POST /api/user/updateLines', function() {
       password: bcrypt.hashSync('mockPassword', 10),
       firstName: 'Foo',
       lastName: 'Bar',
+      apiKey: 'b40e495ffdb32590cc19f76522555a5eca93c3962a6fbacd40c2fff8c61940e2',
       avatar: 'assets/images/default.png',
       lastfm: {
         username: '',
@@ -85,7 +86,7 @@ describe('POST /api/user/updateLines', function() {
   it('should successfully update the user\'s lines per minute', function (done) {
     request(app)
     .post('/api/user/updateLines')
-    .send({currentTime: Date.now(), linesAdded: 20, username: 'mockUser'})
+    .send({linesAdded: 20, username: 'mockUser', apiKey: 'b40e495ffdb32590cc19f76522555a5eca93c3962a6fbacd40c2fff8c61940e2'})
     .expect(200)
     .expect('Content-Type', /json/)
     .end(function (error, res) {

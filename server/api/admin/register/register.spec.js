@@ -20,6 +20,7 @@ describe('POST /api/admin/register', function() {
       password: bcrypt.hashSync('mockPassword', 10),
       firstName: 'Foo',
       lastName: 'Bar',
+      apiKey: 'b40e495ffdb32590cc19f76522555a5eca93c3962a6fbacd40c2fff8c61940e2',
       avatar: 'assets/images/default.png',
       lastfm: {
         username: '',
@@ -39,6 +40,7 @@ describe('POST /api/admin/register', function() {
       password: bcrypt.hashSync('mockPassword', 10),
       firstName: 'Foo',
       lastName: 'Bar',
+      apiKey: 'b40e495ffdb32590cc19f76522555a5eca93c3962a6fbacd40c2fff8c61940e2',
       avatar: 'images/default.png',
       lastfm: {
         username: '',

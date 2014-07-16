@@ -34,6 +34,7 @@ exports.index = function(req, res) {
    var user = {
     username: username,
     password: hash,
+    apiKey: require('crypto').createHash('sha256').update(userId).update('salt').digest('hex'),
     firstName: firstName || '',
     lastName: lastName || '',
     avatar: 'assets/images/default.png',

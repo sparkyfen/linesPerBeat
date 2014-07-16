@@ -72,7 +72,7 @@ module.exports = function (grunt) {
           method: 'POST',
           form: {
             username: '&username&',
-            currentTime: Date.now(),
+            apiKey: '&apiKey&',
             linesAdded: null
           }
         }

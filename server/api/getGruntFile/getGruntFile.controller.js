@@ -29,7 +29,7 @@ exports.index = function(req, res) {
       }
       var protocol = settings.port === 443 ? "https://" : "http://";
       var siteURL = url.resolve(protocol + address + ':' + settings.port, '/api/user/updateLines');
-      gruntFile = gruntFile.replace(/&username&/g, username).replace(/&siteURL&/g, siteURL);
+      gruntFile = gruntFile.replace(/&username&/g, username).replace(/&siteURL&/g, siteURL).replace(/&apiKey&/g, user.apiKey);
       gruntFile = UglifyJS.minify(gruntFile, {fromString: true}).code;
       var packageFile = fs.readFileSync(__dirname + '/../../components/gruntfile/package.json', {encoding: 'utf8'});
       var options = {base64: false, compression:'DEFLATE'};

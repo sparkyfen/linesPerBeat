@@ -9,11 +9,21 @@
   <p>
     <h1>Download the GruntFile</h1>
     <a href="/api/user/gruntfile.js" target="_blank" offline-fade>
-      <img src="assets/images/grunt-logo.png" alt="Grunt Logo" id="gruntLogo" ng-click="finishRegistration()">
+      <img src="assets/images/grunt-logo.png" alt="Grunt Logo" id="gruntLogo">
     </a>
-    <div>
+    <div class="offline">
       <h4>You need Internet access to download this file.</h4>
     </div>
   </p>
+  </material-card>
+  <material-card>
+    <p>
+      <h2>Run Grunt</h2>
+      <h5>Copy and unzip the files to your root of your project.</h5>
+      <h5>Make sure your Git repository is setup.</h5>
+      <h5>Issue `grunt --gruntfile &lt;myGruntFile.js&gt;`</h5>
+      <h5>Your files should now be watched for changes!</h5>
+      <button type="button" class="material-button material-button-raised material-theme-green" ng-click="finishRegistration()">Done</button>
+    </p>
   </material-card>
 </div>

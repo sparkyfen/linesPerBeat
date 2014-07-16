@@ -178,3 +178,28 @@
  *     {"message":"Problem registering user foo, please try again."}
  *
  */
+
+/**
+ * @api {get} /api/user/getParticipants GetParticipants
+ * @apiVersion 1.0.0
+ * @apiName GetParticipants
+ * @apiGroup User
+ * @apiPermission public
+ *
+ * @apiDescription Gets the list of current participants in the hackathon.
+ *
+ * @apiExample CURL example:
+ *      curl -X GET 'http://example.com/api/user/getParticipants'
+ *
+ * @apiSuccess {Array} participants The list of participants
+ *
+ * @apiSuccessExample Success-Response (example):
+ *     HTTP/1.1 200 OK
+ *     [{"username":"volvox","firstName":"","lastName":"","avatar":"assets/images/default.png","lastfm":{"username":"Brutalhonesty08","currentSong":{"artist":"Avicii","song":"You Make Me","url":"http://www.last.fm/music/Avicii/_/You+Make+Me","lastUpdated":1405406649040},"id":"28175646"},"linesPerMinute":0.10407853419261728,"linesLastUpdated":1405393993756,"admin":true}]
+ *
+ * @apiError (Internal Service Error 500) ProblemGettingParticipants There was an issue on the server serving the request.
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 500 Internal Server Error
+ *     {"message": "Problem getting the participant list."}
+ */

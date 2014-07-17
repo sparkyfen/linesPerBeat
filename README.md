@@ -39,7 +39,7 @@ Link Accounts
 
 Get GruntFile
 -------------
-![Screenshot of get grunt file page](http://i.imgur.com/s4496zj.png)
+![Screenshot of get grunt file page](http://i.imgur.com/EdBGd5U.png)
 
 
 TODO

@@ -90,7 +90,7 @@ exports.index = function(req, res) {
   db.searchByUser(username, function (error, reply) {
     if(error) {
       console.log(error);
-      return res.json(500, {message: 'Problem updating password.'});
+      return res.json(500, {message: 'Could not link accounts.'});
     }
     var user = reply.rows[0].value;
     lastfm.request('user.getInfo', {

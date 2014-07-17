@@ -90,7 +90,7 @@
  */
 
 /**
- * @api {get} /api/user/checkCookie CheckCookie
+ * @api {get} /api/user/checkCookie Check Cookie
  * @apiVersion 1.0.0
  * @apiName CheckCookie
  * @apiGroup User
@@ -107,10 +107,10 @@
  *     HTTP/1.1 200 OK
  *     {"message":"Valid."}
  *
- * @apiError (UnAuthorized 401) PleaseSignIn The user needs to sign in again.
+ * @apiError (Unauthorized 401) PleaseSignIn The user needs to sign in again.
  *
  * @apiErrorExample Error-Response (example):
- *     HTTP/1.1 401 UnAuthorized
+ *     HTTP/1.1 401 Unauthorized
  *     {"message":"Please sign in."}
  */
 
@@ -180,7 +180,7 @@
  */
 
 /**
- * @api {get} /api/user/getParticipants GetParticipants
+ * @api {get} /api/user/getParticipants Get Participants
  * @apiVersion 1.0.0
  * @apiName GetParticipants
  * @apiGroup User
@@ -203,3 +203,41 @@
  *     HTTP/1.1 500 Internal Server Error
  *     {"message": "Problem getting the participant list."}
  */
+
+/**
+ * @api {get} /api/user/linkAccounts Link Accounts
+ * @apiVersion 1.0.0
+ * @apiName LinkAccounts
+ * @apiGroup User
+ * @apiPermission user
+ *
+ * @apiDescription Links your Last.FM account with your linesPerBeat account.
+ *
+ * @apiExample CURL example:
+ *      curl -X POST 'http://example.com/api/user/linkAccounts' -d 'lastfmUser=Last.FM'
+ *
+ * @apiSuccess {string} message The successful link accounts message.
+ *
+ * @apiSuccessExample Success-Response (example):
+ *     HTTP/1.1 200 OK
+ *     {"message":"Accounts linked."}
+ *
+ * @apiError (Bad Request 400) MissingLastFMUsername The Last.FM username was not in the request.
+ * @apiError (Bad Request 400) UserAlreadyExists The username already exists.
+ * @apiError (Internal Server Error 500) ProblemRegistering There was an issue on the server serving the request.
+ * @apiError (Unauthorized 401) PleaseSignIn The user needs to sign in again.
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 401 Unauthorized
+ *     {"message":"Please sign in."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message":"Missing Last.FM username."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 500 Internal Server Error
+ *     {"message":"Could not link accounts."}
+ *
+ */
+

@@ -235,3 +235,18 @@ exports.deleteAllUsers = function(docs, callback) {
     throw new Error('Dyanmo DB has not been implemented yet.');
   }
 };
+
+exports.deleteAllProcesses = function(docs, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.childProcesses.bulk({docs: docs}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dyanmo DB has not been implemented yet.');
+  }
+};

@@ -66,4 +66,7 @@ trackStream.on('stoppedPlaying', function (track) {
     });
   });
 });
+trackStream.on('error', function (error) {
+  return console.log(error);
+});
 trackStream.start();

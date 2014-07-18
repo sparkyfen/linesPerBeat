@@ -9,9 +9,10 @@ var bcrypt = require('bcrypt');
 var settings = require('../../../config/environment');
 db.initialize('couchdb');
 var users = db.getUsersTable();
+var processes = db.getChildTable();
 var cookie;
 
-describe('POST /api/admin/deleteAccount', function() {
+describe('POST /api/admin/deleteProcess', function() {
 
   beforeEach(function (done) {
     var admin = {
@@ -21,7 +22,7 @@ describe('POST /api/admin/deleteAccount', function() {
       lastName: 'Bar',
       avatar: 'assets/images/default.png',
       lastfm: {
-        username: '',
+        username: 'LastFM',
         currentSong: {
           artist: '',
           song: '',
@@ -31,6 +32,7 @@ describe('POST /api/admin/deleteAccount', function() {
       },
       linesPerMinute: 0.0,
       linesLastUpdated: Date.now(),
+      pid: 123456,
       admin: true
      };
      var user = {
@@ -40,7 +42,7 @@ describe('POST /api/admin/deleteAccount', function() {
       lastName: 'Bar',
       avatar: 'images/default.png',
       lastfm: {
-        username: '',
+        username: 'LastFM',
         currentSong: {
           artist: '',
           song: '',
@@ -50,7 +52,13 @@ describe('POST /api/admin/deleteAccount', function() {
       },
       linesPerMinute: 0.0,
       linesLastUpdated: Date.now(),
+      pid: 12345,
       admin: false
+    };
+    var processEntry = {
+      lastFmUser: 'LastFM',
+      username: 'mockUser',
+      pid: 12345
     };
     db.insert(users, uuid.v4(), admin, function (error) {
       if (error) {
@@ -62,16 +70,22 @@ describe('POST /api/admin/deleteAccount', function() {
           console.log('Error inserting new user.'.red);
           return done(error);
         }
-        request(app).post('/api/user/login')
-        .send({username: 'mockAdmin', password: 'mockPassword'})
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .end(function(error, res) {
-          if (error) {
+        db.insert(processes, uuid.v4(), processEntry, function (error) {
+          if(error) {
+            console.log('Error inserting new process.'.red);
             return done(error);
           }
-          cookie = res.headers['set-cookie'];
-          done();
+          request(app).post('/api/user/login')
+          .send({username: 'mockAdmin', password: 'mockPassword'})
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .end(function(error, res) {
+            if (error) {
+              return done(error);
+            }
+            cookie = res.headers['set-cookie'];
+            done();
+          });
         });
       });
     });
@@ -83,40 +97,59 @@ describe('POST /api/admin/deleteAccount', function() {
         console.log('Error retrieving admins.'.red);
         return done(error);
       }
-      var docs = [];
+      var userDocs = [];
       for (var i = 0; i < reply.rows.length; i++) {
         var user = reply.rows[i].value;
         user._deleted = true;
-        docs.push(user);
+        userDocs.push(user);
       }
-      db.deleteAllUsers(docs, function(error, reply) {
+      db.searchProcessByAll(function (error, reply) {
         if (error) {
-          console.log('Error deleting admins.'.red);
+          console.log('Error retrieving processes.'.red);
           return done(error);
         }
-        db.compactUserDB(function (error, reply) {
+        var processDocs = [];
+        for (var i = 0; i < reply.rows.length; i++) {
+          var process = reply.rows[i].value;
+          process._deleted = true;
+          processDocs.push(process);
+        }
+        db.deleteAllProcesses(processDocs, function (error, reply) {
           if (error) {
-            console.log('Error compacting user database.'.red);
+            console.log('Error deleting processes.'.red);
             return done(error);
           }
-          done();
+          db.deleteAllUsers(userDocs, function (error, reply) {
+            if (error) {
+              console.log('Error deleting admins.'.red);
+              return done(error);
+            }
+            db.compactUserDB(function (error, reply) {
+              if (error) {
+                console.log('Error compacting user database.'.red);
+                return done(error);
+              }
+              done();
+            });
+          });
         });
       });
     });
   });
 
-  it('should successfully delete a user account', function (done) {
+  it('should successfully delete the requested process', function (done) {
+    app.set('processArray', [{pid: 12345}, {pid: 123456}]);
     request(app)
-    .post('/api/admin/deleteAccount')
+    .post('/api/admin/deleteProcess')
     .set('cookie', cookie)
-    .send({username: 'mockUser'})
+    .send({pid: 12345})
     .expect(200)
     .expect('Content-Type', /json/)
     .end(function (error, res) {
       if (error) {
         return done(error);
       }
-      assert.equal(res.body.message, 'Account deleted.');
+      assert.equal(res.body.message, 'Process deleted.');
       done();
     });
   });

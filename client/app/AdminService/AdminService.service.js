@@ -21,6 +21,17 @@ angular.module('linesPerBeatApp')
         data: deleteData,
         header: {'Content-Type': 'application/x-www-form-urlencoded'}
       });
+    },
+    getProcesses: function() {
+      return $http.get('/api/admin/getProcesses');
+    },
+    deleteProcess: function (processData) {
+      return $http({
+        method: 'POST',
+        url: '/api/admin/deleteProcess',
+        data: processData,
+        header: {'Content-Type': 'application/x-www-form-urlencoded'}
+      });
     }
   };
 }]);

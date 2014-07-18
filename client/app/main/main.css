@@ -65,6 +65,10 @@ img#gruntLogo {
   height: 150px;
 }
 
+button#adminButton {
+  cursor: default;
+}
+
 /* Adopted from polymer-project css */
 material-tabs.transparent-light {
   background-color: transparent;

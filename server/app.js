@@ -34,6 +34,16 @@ var childProcesses = db.getChildTable();
 
 var processArray = [];
 
+function deleteProcessFromList(processArray, pid, callback) {
+  for(var i = 0; i < processArray.length; i++) {
+    if(processArray[i].pid === pid) {
+      processArray.splice(i, 1);
+      return callback();
+    }
+  }
+  return callback('Could not find process within process array.');
+}
+
 /**
  * Search for each user in the child proccess DB and start up a listener for them. Update the DB with their PID afterwards.
  */
@@ -55,6 +65,7 @@ function kickOffLastFMListener() {
           if(!live) {
             var listener = spawn('node', [__dirname + '/api/linkAccounts/lastfmListener.js', '-l', processEntry.lastfmUser, '-u', processEntry.username]);
             processArray.push(listener);
+            app.set('processArray', processArray);
             console.log(('Running new Last.FM Listener Instance with PID ' + listener.pid).green);
             listener.stdout.on('data', function (data) {
               console.log('stdout: ' + data);
@@ -70,6 +81,15 @@ function kickOffLastFMListener() {
                 if(error) {
                   return console.log(error);
                 }
+                deleteProcessFromList(processArray, listener.pid, function (error) {
+                  if(error) {
+                    return console.log(error);
+                  }
+                  app.use(function (req, res, next) {
+                    req.processArray = processArray;
+                    next();
+                  });
+                });
               });
             });
             var user = {
@@ -93,6 +113,8 @@ function kickOffLastFMListener() {
                 }
               });
             }
+          } else {
+            console.log(('Process with pid ' + processEntry.pid + ' is still running!').green);
           }
         });
       })();

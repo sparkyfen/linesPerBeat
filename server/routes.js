@@ -9,6 +9,8 @@ var errors = require('./components/errors');
 module.exports = function(app) {
 
   // Insert routes below
+  app.use('/api/admin/deleteProcess', require('./api/admin/deleteProcess'));
+  app.use('/api/admin/getProcesses', require('./api/admin/getProcesses'));
   app.use('/api/admin/deleteAccount', require('./api/admin/deleteAccount'));
   app.use('/api/admin/checkCookie', require('./api/admin/checkCookie'));
   app.use('/api/admin/register', require('./api/admin/register'));

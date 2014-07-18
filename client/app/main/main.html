@@ -22,7 +22,9 @@
         </div>
         <div class="material-tile-right">
           <!-- TODO Add a tooltip to the Admin icon -->
-          <i class="fa fa-users fa-2x" ng-show="user.admin"></i>
+          <material-tooltip>
+            <i class="fa fa-users fa-2x" ng-show="user.admin"></i>
+          </material-tooltip>
           <center>{{user.linesPerMinute | number:2}}</center>
         </div>
       </material-item>

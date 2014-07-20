@@ -205,7 +205,7 @@
  */
 
 /**
- * @api {get} /api/user/linkAccounts Link Accounts
+ * @api {post} /api/user/linkAccounts Link Accounts
  * @apiVersion 1.0.0
  * @apiName LinkAccounts
  * @apiGroup User
@@ -238,6 +238,63 @@
  * @apiErrorExample Error-Response (example):
  *     HTTP/1.1 500 Internal Server Error
  *     {"message":"Could not link accounts."}
+ *
+ */
+
+/**
+ * @api {post} /api/user/changePassword Change Password
+ * @apiVersion 1.0.0
+ * @apiName ChangePassword
+ * @apiGroup User
+ * @apiPermission user
+ *
+ * @apiDescription Changes your linesPerBeat password.
+ *
+ * @apiExample CURL example:
+ *      curl -X POST 'http://example.com/api/user/changePassword' -d 'oldPassword=foo&newPassword=bar&confirmNewPassword=bar'
+ *
+ * @apiSuccess {string} message The successful change password message.
+ *
+ * @apiSuccessExample Success-Response (example):
+ *     HTTP/1.1 200 OK
+ *     {"message":"Password updated, please sign in."}
+ *
+ * @apiError (Bad Request 400) MissingOldPassword The old password is missing from the request.
+ * @apiError (Bad Request 400) MissingNewPassword The new password is missing from the request.
+ * @apiError (Bad Request 400) MissingConfirmNewPassword The confirmed new password is missing from the request.
+ * @apiError (Bad Request 400) MismatchPasswords The new password and confirmed new password are not the same.
+ * @apiError (Bad Request 400) CannotUseOldPassword Your old password submitted in the request cannot be your new password submitted in the request.
+ * @apiError (Bad Request 400) InvalidOldPassword The old password was the incorrect password.
+ * @apiError (Internal Server Error 500) ProblemChangingPassword There was an issue on the server serving the request.
+ * @apiError (Unauthorized 401) PleaseSignIn The user needs to sign in again.
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 401 Unauthorized
+ *     {"message":"Please sign in."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message":"Missing old password."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message":"Missing new password(s)."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message":"New passwords don\'t match."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message":"Cannot use old password as new password."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message":"Invalid old password."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 500 Internal Server Error
+ *     {"message":"Problem updating password."}
  *
  */
 

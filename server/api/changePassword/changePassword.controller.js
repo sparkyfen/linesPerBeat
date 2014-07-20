@@ -18,9 +18,6 @@ exports.index = function(req, res) {
   var oldPassword = req.body.oldPassword;
   var newPassword = req.body.newPassword;
   var confirmNewPass = req.body.confirmNewPassword;
-  if(validator.isNull(username)) {
-    return res.json(400, {message: 'Missing username.'});
-  }
   if(validator.isNull(oldPassword)) {
     return res.json(400, {message: 'Missing old password.'});
   }
@@ -39,10 +36,6 @@ exports.index = function(req, res) {
       return res.json(500, {message: 'Problem updating password.'});
     }
     var user = reply.rows[0].value;
-    if(!user) {
-      console.log('Someone deleted the user fromt the DB? Might have been the server-side tests!');
-      return res.json(500, {message: 'Problem updating password.'});
-    }
     bcrypt.compare(oldPassword, user.password, function (error, result) {
       if(error) {
         console.log(error);

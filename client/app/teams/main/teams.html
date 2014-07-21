@@ -1,0 +1,18 @@
+<div>
+  <material-card class="material-flex material-display-flex material-flex-center material-whiteframe-z1">
+    <div class="material-flex">
+      <h2>Teams</h2>
+      <material-item ng-repeat="team in teamList | orderBy:'linesPerMinute':true" ng-cloak>
+      <div class="material-tile-left">
+        <img ng-src="{{team.avatar}}" alt="Team Avatar" class="teamAvatar">
+      </div>
+      <div class="material-tile-content">
+        <h2>{{team.name}}</h2>
+      </div>
+      <div class="material-tile-right">
+        <center>{{team.linesPerMinute | number:2}}</center>
+      </div>
+      </material-item>
+    </div>
+  </material-card>
+</div>

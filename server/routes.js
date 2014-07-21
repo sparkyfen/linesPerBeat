@@ -28,6 +28,8 @@ module.exports = function(app) {
   app.use('/api/user/logout', require('./api/logout'));
   app.use('/api/user/login', require('./api/login'));
 
+  app.use('/api/team/getTeams', require('./api/team/getTeams'));
+
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')
    .get(errors[404]);

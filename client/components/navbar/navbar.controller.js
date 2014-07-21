@@ -23,6 +23,12 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     disabled: false,
     submenu: false
   },{
+    title: 'Teams',
+    link: '/teams',
+    show: true,
+    disabled: false,
+    submenu: false
+  },{
     title: 'Register',
     link: '/register',
     show: true,

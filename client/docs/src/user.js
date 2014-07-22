@@ -298,3 +298,36 @@
  *
  */
 
+/**
+ * @api {get} /api/user/getProfile Get Profile
+ * @apiVersion 1.0.0
+ * @apiName GetProfile
+ * @apiGroup User
+ * @apiPermission public
+ *
+ * @apiDescription Gets the requesting user's profile.
+ *
+ * @apiExample CURL example:
+ *      curl -X GET 'http://example.com/api/user/getProfile'
+ *
+ * @apiSuccess {object} profile The user's profile.
+ *
+ * @apiSuccessExample Success-Response (example):
+ *     HTTP/1.1 200 OK
+ *     {"username":"volvox","firstName":"","lastName":"","avatar":"assets/images/default.png","lastfm":{"username":"Brutalhonesty08","currentSong":{"artist":"Pretty Lights","song":"Finally Moving","url":"http://www.last.fm/music/Pretty+Lights/_/Finally+Moving","lastUpdated":1405665515946},"id":"28175646"},"linesPerMinute":1.4423076923076923,"linesLastUpdated":1405489735264,"admin":true}
+ * @apiError (Unauthorized 401) PleaseSignIn The user needs to sign in again.
+ * @apiError (Bad Request 400) InvalidUsername The username requested is invalid.
+ * @apiError (Internal Service Error 500) ProblemGettingProfile There was an issue on the server serving the request.
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 500 Internal Server Error
+ *     {"message": "Problem getting profile."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 400 Bad Request
+ *     {"message": "Invalid username."}
+ *
+ * @apiErrorExample Error-Response (example):
+ *     HTTP/1.1 401 Unauthorized
+ *     {"message": "Please sign in."}
+ */

@@ -23,6 +23,7 @@ exports.index = function(req, res) {
     delete user._id;
     delete user._rev;
     delete user.password;
+    delete user.apiKey;
     return res.json(user);
   });
 };

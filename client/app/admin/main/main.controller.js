@@ -37,10 +37,15 @@ angular.module('linesPerBeatApp')
       throw new Error('UserList and ProcessList are not the same length, restart processes for users missing it.');
     }
     for(var i = 0; i < arr2.length; i++) {
+      var arr1Obj;
       if(arr1[i][prop] === arr2[i][prop]) {
-        var arr1Obj = arr1[i];
+        arr1Obj = arr1[i];
       }
-      arr1Obj ? angular.extend(arr1[i], arr2[i]) : arr1.push(arr2[i]);
+      if(arr1Obj) {
+        angular.extend(arr1[i], arr2[i]);
+      } else {
+        arr1.push(arr2[i]);
+      }
     }
     return arr1;
   };

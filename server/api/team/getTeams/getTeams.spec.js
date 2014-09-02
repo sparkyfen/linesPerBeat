@@ -1,8 +1,15 @@
 'use strict';
 
 var should = require('should');
-var app = require('../../app');
+var app = require('../../../app');
 var request = require('supertest');
+var assert = require('assert');
+var db = require('../../../components/database');
+var bcrypt = require('bcrypt');
+var settings = require('../../../config/environment');
+db.initialize('couchdb');
+var users = db.getUsersTable();
+var cookie;
 
 describe('GET /api/team/getTeams', function() {
 

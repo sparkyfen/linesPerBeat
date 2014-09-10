@@ -1,8 +1,7 @@
 'use strict';
 
-angular.module('linesPerBeatApp')
-  .controller('AdminRegisterCtrl', ['$scope', 'Adminservice', '$rootScope', '$window', '$materialToast', '$location', function ($scope, Adminservice, $rootScope, $window, $materialToast, $location) {
-    $scope.register = function() {
+angular.module('linesPerBeatApp').controller('AdminRegisterCtrl', ['$scope', 'Adminservice', '$rootScope', '$window', '$materialToast', '$location', function ($scope, Adminservice, $rootScope, $window, $materialToast, $location) {
+  $scope.register = function() {
     var registerData = {
       username: $scope.username,
       password: $scope.password,
@@ -11,7 +10,7 @@ angular.module('linesPerBeatApp')
     Adminservice.register(registerData).success(function (registerResp) {
       $window.localStorage.setItem('user', $scope.username);
       $materialToast({
-        template: registerResp.message,
+        template: '<material-toast>' + registerResp.message + '</material-toast>',
         duration: 700,
         position: 'left bottom'
       });
@@ -20,7 +19,7 @@ angular.module('linesPerBeatApp')
       $location.path('/linkLastFm');
     }).error(function (error) {
       $materialToast({
-        template: error.message,
+        template: '<material-toast>' + error.message + '</material-toast>',
         duration: 2000,
         position: 'left bottom'
       });

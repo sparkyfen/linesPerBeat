@@ -1,9 +1,8 @@
-<material-list>
-  <material-whiteframe class="material-flex material-display-flex material-flex-center material-whiteframe-z1">
-    <div class="material-flex">
-      <material-item ng-repeat="user in userList | orderBy:'linesPerMinute':true" ng-cloak>
+<material-content flex class="material-content-padding">
+   <material-list layout-fill>
+     <material-item ng-repeat="user in userList | orderBy:'linesPerMinute':true" ng-cloak>
         <div class="material-tile-left">
-          <img ng-src="{{user.avatar}}" alt="User Avatar" class="userAvatar">
+            <img ng-src="{{user.avatar}}" alt="User Avatar" class="userAvatar">
         </div>
         <div class="material-tile-content">
           <h2>{{user.username}}</h2>
@@ -23,19 +22,18 @@
         <div class="material-tile-right">
           <!-- TODO Add a tooltip to the Admin icon -->
           <material-tooltip>
-            <i class="fa fa-users fa-2x" ng-show="user.admin"></i>
+            <material-icon icon="assets/images/icons/ic_people_24px.svg"></material-icon>
           </material-tooltip>
           <center>{{user.linesPerMinute | number:2}}</center>
         </div>
-      </material-item>
-      <material-item>
-        <div class="material-tile-content" ng-show="userList.length === 0" ng-cloak>
+     </material-item>
+     <material-item ng-show="userList.length === 0" ng-cloak>
+        <div class="material-tile-content">
           <center>
             <h1>Hackathon Time!</h1>
             <h2>Create the first account <a href="/admin/register" id="adminRegisterLink">here</a>!</h2>
           </center>
         </div>
-      </material-item>
-    </div>
-  </material-whiteframe>
-</material-list>
+     </material-item>
+  </material-list>
+</material-content>

@@ -4,31 +4,37 @@
 // =================================
 module.exports = {
   // Server IP
-  ip:       process.env.OPENSHIFT_NODEJS_IP ||
+  ip: process.env.OPENSHIFT_NODEJS_IP ||
             process.env.IP ||
             undefined,
 
   // Server port
-  port:     process.env.OPENSHIFT_NODEJS_PORT ||
+  port: process.env.OPENSHIFT_NODEJS_PORT ||
             process.env.PORT ||
             8080,
   couchdb: {
-    url: 'http://localhost:5984',
+    url: process.env.HEROKU_COUCHDB_URL ||
+              'http://localhost:5984',
     users: 'linesperbeat-user',
     childProcesses: 'linesperbeat-childprocesses'
   },
   crypto: {
-    salt: '' // 64+ character string.
+    salt: process.env.HEROKU_CRYPTO_SALT ||
+              '' // 64+ character string.
   },
   cookie: {
-    secret: '' // 64+ character string.
+    secret: process.env.HEROKU_COOKIE_SECRET ||
+              '' // 64+ character string.
   },
   lastfm: {
-    apiKey: '', // Last.FM API Key.
-    secret: '', // Last.FM API Secret.
+    apiKey: process.env.HEROKU_LASTFM_API_KEY ||
+              '', // Last.FM API Key.
+    secret: process.env.HEROKU_LASTFM_API_SECRET ||
+              '', // Last.FM API Secret.
     useragent: 'LinesPerBeat/v0.1' // Some string to represent the useragent.
   },
   imgur: {
-    clientId: '' //https://api.imgur.com/oauth2/addclient
+    clientId: process.env.HEROKU_IMGUR_CLIENT_ID ||
+              '' //https://api.imgur.com/oauth2/addclient
   }
 };

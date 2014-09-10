@@ -1,104 +1,99 @@
 'use strict';
 
-angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location', 'Userservice', '$window', '$materialToast', '$rootScope', function ($scope, $location, Userservice, $window, $materialToast, $rootScope) {
-  $scope.username = $window.localStorage.getItem('user');
-  if($scope.username !== null) {
-    $scope.isLoggedIn = true;
-  } else {
-    $scope.isLoggedIn = false;
-  }
-  $scope.brand = {
-    title: 'Lines-Per-Beat',
-    link: '/',
-    show: true,
-    disabled: false,
-    onSelect: function() {
-      $location.path(this.link);
-    }
+angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location', 'Userservice', '$window', '$materialToast', '$rootScope', '$timeout', '$materialSidenav', function ($scope, $location, Userservice, $window, $materialToast, $rootScope, $timeout, $materialSidenav) {
+  $scope.openMenu = function() {
+    $materialSidenav('left').toggle();
   };
   $scope.menu = [{
     title: 'Home',
     link: '/',
-    show: true,
+    active: $location.path() === this.link,
     disabled: false,
-    submenu: false
+    submenu: false,
+    brand: false,
+    show: true
   },{
     title: 'Register',
     link: '/register',
-    show: true,
+    active: $location.path() === this.link,
     disabled: false,
-    submenu: false
+    show: true
   },{
     title: 'Login',
     link: '/login',
-    show: !$scope.isLoggedIn,
+    active: $location.path() === this.link,
     disabled: false,
-    submenu: false
+    show: true
   },{
-    title: $scope.username,
-    link: '',
-    show: $scope.isLoggedIn,
-    disabled: false,
-    submenu: true
-  }];
-  $rootScope.$on('isLoggedIn', function (event, reply) {
-    // TODO Sometimes the user will show on the navbar, sometimes it won't.
-    if(reply.value) {
-      $scope.menu[2].show = false;
-      $scope.username = reply.user;
-      $scope.menu[3].show = true;
-      $scope.selectedItem = 0;
-    } else {
-      $scope.menu[2].show = true;
-      $scope.menu[3].show = false;
-    }
-  });
-  $scope.usermenu = [{
     title: 'Edit Profile',
     link: '/user/editProfile',
-    show: true,
+    active: $location.path() === this.link,
     disabled: false,
-    onSelect: function() {
-      $location.path(this.link);
-    }
+    show: false
   },{
     title: 'Change Password',
     link: '/user/changePassword',
-    show: true,
+    active: $location.path() === this.link,
     disabled: false,
-    onSelect: function() {
-      $location.path(this.link);
-    }
+    show: false
   },{
     title: 'Logout',
     link: '',
-    show: true,
+    active: false,
     disabled: false,
-    onSelect: function() {
-      $scope.logout();
-    }
+    show: false
   }];
-  $scope.$watch('selectedItem', function (index) {
-    if(index !== undefined) {
-      $scope.selectedItem = index;
-      $location.path($scope.menu[index].link);
+  $scope.onTabSelected = function (tab) {
+    $scope.selectedItem = this.$index;
+    $materialSidenav('left').close();
+    if(tab.title === 'Logout') {
+      $scope.logout();
+    } else {
+      $location.path(tab.link);
     }
+  };
+  $scope.$on('loggedIn', function (event, reply) {
+    $window.localStorage.setItem('user', reply.user);
+    $scope.username = $window.localStorage.getItem('user');
+    $scope.menu[2].show = false;
+    $scope.menu[3].show = true;
+    $scope.menu[4].show = true;
+    $scope.menu[5].show = true;
+    $location.path('/');
   });
+  $scope.$on('loggedOut', function () {
+    $scope.menu[2].show = true;
+    $scope.menu[3].show = false;
+    $scope.menu[4].show = false;
+    $scope.menu[5].show = false;
+    $location.path('/');
+  });
+  $scope.username = $window.localStorage.getItem('user');
+  if($scope.username !== null) {
+    $scope.$emit('loggedIn', {user: $scope.username});
+  }
   $scope.logout = function () {
     Userservice.logout().success(function (logoutResp) {
       $materialToast({
-        template: logoutResp.message,
-        duration: 700,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 700,
+          message: logoutResp.message
+       }
       });
       $window.localStorage.clear();
-      $scope.$emit('isLoggedIn', {value: false});
-      $scope.selectedItem = 0;
+      $scope.$emit('loggedOut');
     }).error(function (error) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
     });
   };

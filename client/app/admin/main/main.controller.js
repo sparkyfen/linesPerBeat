@@ -8,24 +8,36 @@ angular.module('linesPerBeatApp')
         $scope.userList = $scope.mergeByProperty(userList, processList, 'username');
       } catch(e) {
         $materialToast({
-          template: e.message,
-          duration: 4000,
-          position: 'left bottom'
+          controller: 'ToastCtrl',
+          templateUrl: 'components/toast/toast.html',
+          position: 'bottom left',
+          locals: {
+            closeTime: 4000,
+            message: e.message
+         }
         });
       }
     }).error(function (error) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
     });
   }).error(function (error) {
     $materialToast({
-      template: error.message,
-      duration: 2000,
-      position: 'left bottom'
-    });
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
+      });
   });
   $scope.$on('deleteAccount', function (event, data) {
     if($scope.userList) {
@@ -37,10 +49,15 @@ angular.module('linesPerBeatApp')
       throw new Error('UserList and ProcessList are not the same length, restart processes for users missing it.');
     }
     for(var i = 0; i < arr2.length; i++) {
+      var arr1Obj;
       if(arr1[i][prop] === arr2[i][prop]) {
-        var arr1Obj = arr1[i];
+        arr1Obj = arr1[i];
       }
-      arr1Obj ? angular.extend(arr1[i], arr2[i]) : arr1.push(arr2[i]);
+      if(arr1Obj) {
+        angular.extend(arr1[i], arr2[i]);
+      } else {
+        arr1.push(arr2[i]);
+      }
     }
     return arr1;
   };
@@ -57,16 +74,24 @@ angular.module('linesPerBeatApp')
           };
           Adminservice.deleteProcess(processData).success(function (processResponse) {
             $materialToast({
-              template: processResponse.message,
-              duration: 700,
-              position: 'left bottom'
+              controller: 'ToastCtrl',
+              templateUrl: 'components/toast/toast.html',
+              position: 'bottom left',
+              locals: {
+                closeTime: 700,
+                message: processResponse.message
+             }
             });
             $hideDialog();
           }).error(function (error, statusCode){
             $materialToast({
-              template: error.message,
-              duration: 2000,
-              position: 'left bottom'
+              controller: 'ToastCtrl',
+              templateUrl: 'components/toast/toast.html',
+              position: 'bottom left',
+              locals: {
+                closeTime: 2000,
+                message: error.message
+             }
             });
             if(statusCode === 401) {
               $location.path('/login');
@@ -79,9 +104,13 @@ angular.module('linesPerBeatApp')
   $scope.openDeleteModal = function(username, index, e) {
     if(username === $window.localStorage.getItem('user')) {
       $materialToast({
-        template: 'Can\'t delete your own account.',
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: 'Can\'t delete your own account.'
+       }
       });
     } else {
       $materialDialog({
@@ -95,17 +124,25 @@ angular.module('linesPerBeatApp')
             };
             Adminservice.deleteAccount(userData).success(function (deleteResp) {
               $materialToast({
-                template: deleteResp.message,
-                duration: 700,
-                position: 'left bottom'
+                controller: 'ToastCtrl',
+                templateUrl: 'components/toast/toast.html',
+                position: 'bottom left',
+                locals: {
+                  closeTime: 700,
+                  message: deleteResp.message
+               }
               });
               $rootScope.$broadcast('deleteAccount', {index: index});
               $hideDialog();
             }).error(function (error, statusCode) {
               $materialToast({
-                template: error.message,
-                duration: 2000,
-                position: 'left bottom'
+                controller: 'ToastCtrl',
+                templateUrl: 'components/toast/toast.html',
+                position: 'bottom left',
+                locals: {
+                  closeTime: 2000,
+                  message: error.message
+               }
               });
               if(statusCode === 401) {
                 $location.path('/login');

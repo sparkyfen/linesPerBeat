@@ -1,20 +1,20 @@
-<div>
-  <material-card>
-  <h2>Register</h2>
-  <form ng-submit="register()" class="form-horizontal registerForm" name="registerForm">
-    <div class="material-input-group material-input-group-theme-light">
-      <label>Username</label>
-      <input type="text" ng-model="username" required autofocus>
-    </div>
-    <div class="material-input-group material-input-group-theme-light">
-      <label>Password</label>
-      <input type="password" ng-model="password" required>
-    </div>
-    <div class="material-input-group material-input-group-theme-light">
-      <label>Confirm Password</label>
-      <input type="password" ng-model="confirmPassword" required>
-    </div>
-    <button type="submit" class="material-button material-button-raised material-button-colored" offline-disabled>Submit</button>
-  </form>
+<material-content>
+  <material-card flex>
+    <h2>Register</h2>
+    <form ng-submit="register()" class="form-horizontal registerForm" name="registerForm">
+      <material-input-group class="material-input-group-theme-light">
+        <label>Username</label>
+        <material-input type="text" ng-model="username" required autofocus>
+      </material-input-group>
+      <material-input-group class="material-input-group-theme-light">
+        <label>Password</label>
+        <material-input type="password" ng-model="password" required>
+      </material-input-group>
+      <material-input-group class="material-input-group-theme-light">
+        <label>Confirm Password</label>
+        <material-input type="password" ng-model="confirmPassword" required>
+      </material-input-group>
+      <material-button type="submit" class="material-button material-button-raised material-button-colored" offline-disabled>Submit</material-button>
+    </form>
   </material-card>
-</div>
+</material-content>

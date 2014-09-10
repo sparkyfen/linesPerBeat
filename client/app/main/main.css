@@ -14,13 +14,13 @@ material-tab.brand {
   width: 50%;
 }
 
-form.loginForm .material-input-group input,
-form.registerForm .material-input-group input,
-form.changePasswordForm .material-input-group input,
-form.editProfileForm .material-input-group input,
-form.linkForm .material-input-group input,
-form.uploadForm .material-input-group input,
-form.adminRegisterForm .material-input-group input {
+form.loginForm material-input-group input,
+form.registerForm material-input-group input,
+form.changePasswordForm material-input-group input,
+form.editProfileForm material-input-group input,
+form.linkForm material-input-group input,
+form.uploadForm material-input-group input,
+form.adminRegisterForm material-input-group input {
   width: 75%;
 }
 

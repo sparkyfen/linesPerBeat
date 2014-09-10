@@ -5,9 +5,13 @@ angular.module('linesPerBeatApp').controller('MainCtrl', ['$scope', 'Userservice
     $scope.userList = userList;
   }).error(function (error) {
     $materialToast({
-      template: error.message,
-      duration: 2000,
-      position: 'left bottom'
-    });
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
+      });
   });
 }]);

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('linesPerBeatApp')
-  .controller('LinklastfmCtrl', ['$scope', 'Userservice', '$location', '$timeout', '$materialToast', '$window', function ($scope, Userservice, $location, $timeout, $materialToast, $window) {
+  .controller('LinklastfmCtrl', ['$scope', 'Userservice', '$location', '$materialToast', '$window', '$rootScope', function ($scope, Userservice, $location, $materialToast, $window, $rootScope) {
   $scope.linkAccount = function() {
     var linkData = {
       lastfmUser: $scope.lastfmUser
@@ -29,7 +29,7 @@ angular.module('linesPerBeatApp')
       });
       if(statusCode === 401) {
         $window.localStorage.clear();
-        $location.path('/');
+        $rootScope.$emit('loggedOut');
       }
     });
   };

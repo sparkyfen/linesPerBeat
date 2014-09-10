@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('linesPerBeatApp')
-  .controller('EditprofileCtrl', ['$scope', 'Userservice', '$timeout', '$location', '$materialToast', '$window', '$route', function ($scope, Userservice, $timeout, $location, $materialToast, $window, $route) {
+  .controller('EditprofileCtrl', ['$scope', 'Userservice', '$timeout', '$location', '$materialToast', '$window', '$route', '$rootScope', function ($scope, Userservice, $timeout, $location, $materialToast, $window, $route, $rootScope) {
   Userservice.getProfile().success(function (profileResp) {
     $scope.firstName = profileResp.firstName;
     $scope.lastName = profileResp.lastName;
@@ -18,7 +18,7 @@ angular.module('linesPerBeatApp')
     });
     if(statusCode === 401) {
       $window.localStorage.clear();
-      $location.path('/');
+      $rootScope.$emit('loggedOut');
     }
   });
   $scope.selectedAvatar = 1;
@@ -57,7 +57,7 @@ angular.module('linesPerBeatApp')
       });
       if(statusCode === 401) {
         $window.localStorage.clear();
-        $location.path('/');
+        $rootScope.$emit('loggedOut');
       }
     });
   };
@@ -89,7 +89,7 @@ angular.module('linesPerBeatApp')
       });
       if(statusCode === 401) {
         $window.localStorage.clear();
-        $location.path('/');
+        $rootScope.$emit('loggedOut');
       }
     });
   };

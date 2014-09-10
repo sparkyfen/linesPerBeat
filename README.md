@@ -50,6 +50,10 @@ API Docs
 --------
 [/docs/](docs/)
 
+Demo
+------
+http://linesperbeat.herokuapp.com/
+
 ```bash
 # Generate API Docs
 grunt apidoc

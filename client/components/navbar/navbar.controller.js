@@ -61,7 +61,7 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     $scope.menu[5].show = true;
     $location.path('/');
   });
-  $scope.$on('loggedOut', function () {
+  $rootScope.$on('loggedOut', function () {
     $scope.menu[2].show = true;
     $scope.menu[3].show = false;
     $scope.menu[4].show = false;
@@ -84,7 +84,7 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
        }
       });
       $window.localStorage.clear();
-      $scope.$emit('loggedOut');
+      $rootScope.$emit('loggedOut');
     }).error(function (error) {
       $materialToast({
         controller: 'ToastCtrl',

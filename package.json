@@ -105,5 +105,9 @@
     "start": "node server/app.js",
     "test": "grunt test:server",
     "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update"
+  },
+  "repository" : {
+      "type" : "git",
+      "url" : "http://github.com/brutalhonesty/linesPerBeat.git"
   }
 }

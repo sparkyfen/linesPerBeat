@@ -9,8 +9,8 @@
     <base href="/">
     <title>Lines-Per-Beat API Docs</title>
     <meta name="description" content="Hackathon LeaderBoard API Docs">
-    <meta name="viewport" content="initial-scale=1.0,width=device-width,user-scalable=0, minimal-ui" />
-    <link rel="stylesheet" href="../assets/css/angular-material/material-design.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <link rel="stylesheet" href="../bower_components/angular-material/angular-material.css">
   </head>
   <body ng-app="docsApp">
     <!--[if lt IE 7]>
@@ -18,7 +18,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-controller="MainCtrl" class="tabs-view">
+    <div class="container" ng-controller="MainCtrl">
         <material-card>
             <h2>Run 'grunt apidoc' to create the documentation.</h2>
         </material-card>
@@ -30,14 +30,10 @@
     <![endif]-->
     <script src="../bower_components/angular/angular.js"></script>
     <script src="../bower_components/angular-animate/angular-animate.js"></script>
-        <!-- build:js({.tmp,app}) scripts/scripts.js -->
-        <script src="../assets/js/angular-material/angular-animate-sequence.js"></script>
-        <script src="../assets/js/angular-material/angular-animate-stylers.js"></script>
-        <script src="../assets/js/angular-material/material-design.js"></script>
-        <script>
+    <script src="../bower_components/angular-material/angular-material.js"></script>
+    <script>
         angular.module('docsApp', ['ngAnimate', 'ngMaterial', function(){}]);
         angular.module('docsApp').controller('MainCtrl', [function () {}]);
-        </script>
-        <!-- endbuild -->
+    </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('linesPerBeatApp')
-  .controller('LoginCtrl', ['$scope', 'Userservice', '$location', '$timeout', '$window', '$materialToast', '$rootScope', function ($scope, Userservice, $location, $timeout, $window, $materialToast, $rootScope) {
+  .controller('LoginCtrl', ['$scope', 'Userservice', '$location', '$window', '$materialToast', '$rootScope', function ($scope, Userservice, $location, $window, $materialToast, $rootScope) {
   $scope.login = function() {
     var loginData = {
       username: $scope.username,
@@ -10,17 +10,24 @@ angular.module('linesPerBeatApp')
     Userservice.login(loginData).success(function (loginResp) {
       $window.localStorage.setItem('user', $scope.username);
       $materialToast({
-        template: loginResp.message,
-        duration: 700,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 1000,
+          message: loginResp.message
+       }
       });
-      $rootScope.$emit('isLoggedIn', {value: true, user: $scope.username});
-      $location.path('/');
+      $rootScope.$broadcast('loggedIn', {user: $scope.username});
     }).error(function (error) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
     });
   };

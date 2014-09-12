@@ -9,7 +9,7 @@
     <base href="/">
     <title>Lines-Per-Beat</title>
     <meta name="description" content="Hackathon LeaderBoard">
-    <meta name="viewport" content="initial-scale=1.0,width=device-width,user-scalable=0, minimal-ui" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(client) app/vendor.css -->
       <!-- bower:css -->
@@ -17,10 +17,10 @@
       <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.css" />
       <link rel="stylesheet" href="bower_components/offline/themes/offline-theme-chrome.css" />
       <link rel="stylesheet" href="bower_components/offline/themes/offline-language-english.css" />
+      <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
       <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css({.tmp,client}) app/app.css -->
-    <link rel="stylesheet" href="assets/css/angular-material/material-design.css">
     <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
       <link rel="stylesheet" href="app/admin/main/main.css">
@@ -75,18 +75,17 @@
       <script src="bower_components/angular-route/angular-route.js"></script>
       <script src="bower_components/lodash/dist/lodash.compat.js"></script>
       <script src="bower_components/angular-animate/angular-animate.js"></script>
+      <script src="bower_components/angular-material/angular-material.js"></script>
       <!-- endbower -->
     <!-- endbuild -->
 
         <!-- build:js({.tmp,client}) app/app.js -->
-        <script src="assets/js/angular-material/angular-animate-sequence.js"></script>
-        <script src="assets/js/angular-material/angular-animate-stylers.js"></script>
-        <script src="assets/js/angular-material/material-design.js"></script>
         <script src="assets/js/offline/offline.js"></script>
         <script src="app/app.js"></script>
           <!-- injector:js -->
           <script src="app/AdminService/AdminService.service.js"></script>
           <script src="app/TeamService/TeamService.service.js"></script>
+          <script src="app/Toast/Toast.controller.js"></script>
           <script src="app/UserService/UserService.service.js"></script>
           <script src="app/admin/main/main.controller.js"></script>
           <script src="app/admin/main/main.js"></script>

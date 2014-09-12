@@ -1,13 +1,13 @@
-<div>
+<material-content>
   <material-card>
     <h2>Link Last.FM Account <i class="fa fa-info-circle fa-1x"></i></h2>
-    <form ng-submit="linkAccount()" class="form-horizontal linkForm" name="linkForm">
-      <div class="material-input-group material-input-group-theme-light">
-        <label>Username</label>
-        <input type="text" ng-model="lastfmUser" required autofocus>
-      </div>
-      <button type="submit" class="material-button material-button-raised material-button-colored" offline-disabled>Submit</button>
-    </form>
-    <span class="help-block">Don't have a Last.FM Account? Make one <a href="https://secure.last.fm/join" target="_blank">here</a>.</span>
+      <form ng-submit="linkAccount()" class="form-horizontal linkForm" name="linkForm">
+        <material-input-group class="material-input-group-theme-light">
+          <label>Username</label>
+          <material-input type="text" ng-model="lastfmUser" required autofocus>
+        </material-input-group>
+        <material-button type="submit" class="material-button material-button-raised material-button-colored" offline-disabled>Submit</material-button>
+      </form>
+      <span class="help-block">Don't have a Last.FM Account? Make one <a href="https://secure.last.fm/join" target="_blank" offline-disabled>here</a>.</span>
   </material-card>
-</div>
+</material-content>

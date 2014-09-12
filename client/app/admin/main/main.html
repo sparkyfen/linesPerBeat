@@ -11,9 +11,9 @@
         <div class="material-tile-content">
         </div>
         <div class="material-tile-right">
-          <button type="button" id="adminButton" class="material-button material-theme-green" ng-show="user.admin">Admin</button>
-          <button type="button" class="material-button material-button-raised material-button-colored" ng-click="openProcessModal(user.pid, user.username, $event)" offline-disabled>Kill Process</button>
-          <button type="button" class="material-button material-button-raised material-theme-red" ng-click="openDeleteModal(user.username, $index, $event)" offline-disabled>Delete</button>
+          <material-button type="button" id="adminButton" class="material-button material-theme-green" ng-show="user.admin">Admin</material-button>
+          <material-button type="button" class="material-button material-button-raised material-button-colored" ng-click="openProcessModal(user.pid, user.username, $event)" offline-disabled>Kill Process</material-button>
+          <material-button type="button" class="material-button material-button-raised material-theme-red" ng-click="openDeleteModal(user.username, $index, $event)" offline-disabled>Delete</material-button>
         </div>
       </material-item>
       <material-item ng-show="userList.length === 0" ng-cloak>

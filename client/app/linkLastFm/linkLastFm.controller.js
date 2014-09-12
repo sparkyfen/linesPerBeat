@@ -1,27 +1,35 @@
 'use strict';
 
 angular.module('linesPerBeatApp')
-  .controller('LinklastfmCtrl', ['$scope', 'Userservice', '$location', '$timeout', '$materialToast', '$window', function ($scope, Userservice, $location, $timeout, $materialToast, $window) {
+  .controller('LinklastfmCtrl', ['$scope', 'Userservice', '$location', '$materialToast', '$window', '$rootScope', function ($scope, Userservice, $location, $materialToast, $window, $rootScope) {
   $scope.linkAccount = function() {
     var linkData = {
       lastfmUser: $scope.lastfmUser
     };
     Userservice.linkAccount(linkData).success(function (linkResp) {
       $materialToast({
-        template: linkResp.message,
-        duration: 700,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 1000,
+          message: linkResp.message
+       }
       });
       $location.path('/getGruntFile');
     }).error(function (error, statusCode) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
       if(statusCode === 401) {
         $window.localStorage.clear();
-        $location.path('/');
+        $rootScope.$emit('loggedOut');
       }
     });
   };

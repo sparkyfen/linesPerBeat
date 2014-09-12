@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('linesperbeatApp')
+angular.module('linesPerBeatApp')
   .controller('AddteamCtrl', function ($scope) {
     $scope.message = 'Hello';
   });

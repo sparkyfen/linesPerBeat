@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('linesperbeatApp')
+angular.module('linesPerBeatApp')
   .config(function ($routeProvider) {
     $routeProvider
       .when('/teams/add', {

@@ -8,24 +8,36 @@ angular.module('linesPerBeatApp')
         $scope.userList = $scope.mergeByProperty(userList, processList, 'username');
       } catch(e) {
         $materialToast({
-          template: e.message,
-          duration: 4000,
-          position: 'left bottom'
+          controller: 'ToastCtrl',
+          templateUrl: 'components/toast/toast.html',
+          position: 'bottom left',
+          locals: {
+            closeTime: 4000,
+            message: e.message
+         }
         });
       }
     }).error(function (error) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
     });
   }).error(function (error) {
     $materialToast({
-      template: error.message,
-      duration: 2000,
-      position: 'left bottom'
-    });
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
+      });
   });
   $scope.$on('deleteAccount', function (event, data) {
     if($scope.userList) {
@@ -62,16 +74,24 @@ angular.module('linesPerBeatApp')
           };
           Adminservice.deleteProcess(processData).success(function (processResponse) {
             $materialToast({
-              template: processResponse.message,
-              duration: 700,
-              position: 'left bottom'
+              controller: 'ToastCtrl',
+              templateUrl: 'components/toast/toast.html',
+              position: 'bottom left',
+              locals: {
+                closeTime: 700,
+                message: processResponse.message
+             }
             });
             $hideDialog();
           }).error(function (error, statusCode){
             $materialToast({
-              template: error.message,
-              duration: 2000,
-              position: 'left bottom'
+              controller: 'ToastCtrl',
+              templateUrl: 'components/toast/toast.html',
+              position: 'bottom left',
+              locals: {
+                closeTime: 2000,
+                message: error.message
+             }
             });
             if(statusCode === 401) {
               $location.path('/login');
@@ -84,9 +104,13 @@ angular.module('linesPerBeatApp')
   $scope.openDeleteModal = function(username, index, e) {
     if(username === $window.localStorage.getItem('user')) {
       $materialToast({
-        template: 'Can\'t delete your own account.',
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: 'Can\'t delete your own account.'
+       }
       });
     } else {
       $materialDialog({
@@ -100,17 +124,25 @@ angular.module('linesPerBeatApp')
             };
             Adminservice.deleteAccount(userData).success(function (deleteResp) {
               $materialToast({
-                template: deleteResp.message,
-                duration: 700,
-                position: 'left bottom'
+                controller: 'ToastCtrl',
+                templateUrl: 'components/toast/toast.html',
+                position: 'bottom left',
+                locals: {
+                  closeTime: 700,
+                  message: deleteResp.message
+               }
               });
               $rootScope.$broadcast('deleteAccount', {index: index});
               $hideDialog();
             }).error(function (error, statusCode) {
               $materialToast({
-                template: error.message,
-                duration: 2000,
-                position: 'left bottom'
+                controller: 'ToastCtrl',
+                templateUrl: 'components/toast/toast.html',
+                position: 'bottom left',
+                locals: {
+                  closeTime: 2000,
+                  message: error.message
+               }
               });
               if(statusCode === 401) {
                 $location.path('/login');

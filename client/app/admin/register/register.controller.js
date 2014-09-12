@@ -1,8 +1,7 @@
 'use strict';
 
-angular.module('linesPerBeatApp')
-  .controller('AdminRegisterCtrl', ['$scope', 'Adminservice', '$rootScope', '$window', '$materialToast', '$location', function ($scope, Adminservice, $rootScope, $window, $materialToast, $location) {
-    $scope.register = function() {
+angular.module('linesPerBeatApp').controller('AdminRegisterCtrl', ['$scope', 'Adminservice', '$rootScope', '$window', '$materialToast', '$location', function ($scope, Adminservice, $rootScope, $window, $materialToast, $location) {
+  $scope.register = function() {
     var registerData = {
       username: $scope.username,
       password: $scope.password,
@@ -11,18 +10,24 @@ angular.module('linesPerBeatApp')
     Adminservice.register(registerData).success(function (registerResp) {
       $window.localStorage.setItem('user', $scope.username);
       $materialToast({
-        template: registerResp.message,
-        duration: 700,
-        position: 'left bottom'
-      });
-      $rootScope.$emit('isLoggedIn', {value: true, user: $scope.username});
-      // TODO This redirect never lands because the $emit fires $watch which fires a $location.path as well to the root page.
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 1000,
+          message: registerResp.message
+       }
+     });
       $location.path('/linkLastFm');
     }).error(function (error) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
     });
   };

@@ -1,20 +1,24 @@
 'use strict';
 
 angular.module('linesPerBeatApp')
-  .controller('EditprofileCtrl',['$scope', 'Userservice', '$timeout', '$location', '$materialToast', '$window', '$route', function ($scope, Userservice, $timeout, $location, $materialToast, $window, $route) {
+  .controller('EditprofileCtrl', ['$scope', 'Userservice', '$timeout', '$location', '$materialToast', '$window', '$route', '$rootScope', function ($scope, Userservice, $timeout, $location, $materialToast, $window, $route, $rootScope) {
   Userservice.getProfile().success(function (profileResp) {
     $scope.firstName = profileResp.firstName;
     $scope.lastName = profileResp.lastName;
     $scope.lastfmUser = profileResp.lastfm.username;
   }).error(function (error, statusCode) {
     $materialToast({
-      template: error.message,
-      duration: 2000,
-      position: 'left bottom'
+      controller: 'ToastCtrl',
+      templateUrl: 'components/toast/toast.html',
+      position: 'bottom left',
+      locals: {
+        closeTime: 2000,
+        message: error.message
+     }
     });
     if(statusCode === 401) {
       $window.localStorage.clear();
-      $location.path('/');
+      $rootScope.$emit('loggedOut');
     }
   });
   $scope.selectedAvatar = 1;
@@ -32,20 +36,28 @@ angular.module('linesPerBeatApp')
     };
     Userservice.uploadAvatar(uploadData).success(function (uploadResp) {
       $materialToast({
-        template: uploadResp.message,
-        duration: 700,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 700,
+          message: uploadResp.message
+       }
       });
       $route.reload();
     }).error(function (error, statusCode) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
       if(statusCode === 401) {
         $window.localStorage.clear();
-        $location.path('/');
+        $rootScope.$emit('loggedOut');
       }
     });
   };
@@ -57,19 +69,27 @@ angular.module('linesPerBeatApp')
     };
     Userservice.updateProfile(profileData).success(function (profileResp) {
       $materialToast({
-        template: profileResp.message,
-        duration: 700,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 700,
+          message: profileResp.message
+       }
       });
     }).error(function (error, statusCode) {
       $materialToast({
-        template: error.message,
-        duration: 2000,
-        position: 'left bottom'
+        controller: 'ToastCtrl',
+        templateUrl: 'components/toast/toast.html',
+        position: 'bottom left',
+        locals: {
+          closeTime: 2000,
+          message: error.message
+       }
       });
       if(statusCode === 401) {
         $window.localStorage.clear();
-        $location.path('/');
+        $rootScope.$emit('loggedOut');
       }
     });
   };

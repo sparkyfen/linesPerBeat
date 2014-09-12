@@ -2,19 +2,19 @@
 
 ## client/app/admin/register/register.controller.js
 
--  **TODO** `(line 19)`  This redirect never lands because the $emit fires $watch which fires a $location.path as well to the root page.
+-  **TODO** `(line 18)`  This redirect never lands because the $emit fires $watch which fires a $location.path as well to the root page.
 
 ## client/app/changePassword/changePassword.controller.js
 
--  **TODO** `(line 31)`  Reset the navbar after the user changes their password. The Login word appears but the secondary menu still displays.
+-  **TODO** `(line 39)`  Reset the navbar after the user changes their password. The Login word appears but the secondary menu still displays.
 
 ## client/app/linkLastFm/linkLastFm.controller.js
 
--  **TODO** `(line 28)`  Add Material Tooltip when it's available.
+-  **TODO** `(line 36)`  Add Material Tooltip when it's available.
 
 ## client/app/main/main.html
 
--  **TODO** `(line 24)`  Add a tooltip to the Admin icon -->
+-  **TODO** `(line 23)`  Add a tooltip to the Admin icon -->
 
 ## server/api/updateProfile/updateProfile.controller.js
 

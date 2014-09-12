@@ -16,6 +16,7 @@ exports.index = function(req, res) {
       delete reply.rows[i].value._id;
       delete reply.rows[i].value._rev;
       delete reply.rows[i].value.password;
+      delete reply.rows[i].value.apiKey;
       users.push(reply.rows[i].value);
     }
     return res.json(users);

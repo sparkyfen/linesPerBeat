@@ -29,7 +29,7 @@ angular.module('linesPerBeatApp')
         templateUrl: 'components/toast/toast.html',
         position: 'bottom left',
         locals: {
-          closeTime: 700,
+          closeTime: 1000,
           message: passwordResp.message
        }
       });

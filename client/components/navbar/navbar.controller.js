@@ -79,7 +79,7 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
         templateUrl: 'components/toast/toast.html',
         position: 'bottom left',
         locals: {
-          closeTime: 700,
+          closeTime: 1000,
           message: logoutResp.message
        }
       });

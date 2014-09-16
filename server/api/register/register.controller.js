@@ -4,6 +4,7 @@ var validator = require('validator');
 var bcrypt = require('bcrypt');
 var uuid = require('node-uuid');
 var db = require('../../components/database');
+var settings = require('../../config/environment');
 
 db.initialize('couchdb');
 
@@ -34,7 +35,7 @@ exports.index = function(req, res) {
    var user = {
     username: username,
     password: hash,
-    apiKey: require('crypto').createHash('sha256').update(userId).update('salt').digest('hex'),
+    apiKey: require('crypto').createHash('sha256').update(userId).update(settings.crypto.salt).digest('hex'),
     firstName: firstName || '',
     lastName: lastName || '',
     avatar: 'assets/images/default.png',
@@ -49,6 +50,7 @@ exports.index = function(req, res) {
     },
     linesPerMinute: 0.0,
     linesLastUpdated: Date.now(),
+    team: '',
     admin: false
    };
    // Check to see if the user id exists (should not because its uuid generated).
@@ -60,6 +62,7 @@ exports.index = function(req, res) {
     if(reply) {
       return res.json(400, {message: 'User id already exists.'});
     }
+    // TODO Investigate why we are searching for all users and then searching for the particular user.
     db.searchUserByAll(function (error, reply) {
       if(error) {
         console.log(error);

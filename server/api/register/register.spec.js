@@ -1,6 +1,7 @@
 'use strict';
 
 var should = require('should');
+var colors = require('colors');
 var app = require('../../app');
 var request = require('supertest');
 var assert = require('assert');

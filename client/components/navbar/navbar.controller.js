@@ -48,6 +48,24 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     active: false,
     disabled: false,
     show: false
+  },{
+    title: '',
+    link: '',
+    active: false,
+    disabled: true,
+    show: false
+  },{
+    title: 'Admin',
+    link: '/admin',
+    active: false,
+    disabled: false,
+    show: false
+  },{
+    title: 'Admin Register',
+    link: '/admin/register',
+    active: false,
+    disabled: false,
+    show: false
   }];
   $scope.onTabSelected = function (tab) {
     $scope.selectedItem = this.$index;
@@ -60,11 +78,17 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
   };
   $scope.$on('loggedIn', function (event, reply) {
     $window.localStorage.setItem('user', reply.user);
-    $scope.username = $window.localStorage.getItem('user');
+    $window.localStorage.setItem('admin', reply.admin);
+    $scope.username = reply.user;
     $scope.menu[3].show = false;
     $scope.menu[4].show = true;
     $scope.menu[5].show = true;
     $scope.menu[6].show = true;
+    if(reply.admin) {
+      $scope.menu[7].show = true;
+      $scope.menu[8].show = true;
+      $scope.menu[9].show = true;
+    }
     $location.path('/');
   });
   $rootScope.$on('loggedOut', function () {
@@ -72,11 +96,14 @@ angular.module('linesPerBeatApp').controller('NavbarCtrl', ['$scope', '$location
     $scope.menu[4].show = false;
     $scope.menu[5].show = false;
     $scope.menu[6].show = false;
+    $scope.menu[7].show = false;
+    $scope.menu[8].show = false;
+    $scope.menu[9].show = false;
     $location.path('/');
   });
   $scope.username = $window.localStorage.getItem('user');
   if($scope.username !== null) {
-    $scope.$emit('loggedIn', {user: $scope.username});
+    $scope.$emit('loggedIn', {user: $scope.username, admin: $window.localStorage.getItem('admin')});
   }
   $scope.logout = function () {
     Userservice.logout().success(function (logoutResp) {

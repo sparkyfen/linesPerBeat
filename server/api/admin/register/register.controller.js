@@ -49,7 +49,7 @@ exports.index = function(req, res) {
       var user = {
         username: username,
         password: hash,
-        apiKey: require('crypto').createHash('sha256').update(userId).update('salt').digest('hex'),
+        apiKey: require('crypto').createHash('sha256').update(userId).update(settings.crypto.salt).digest('hex'),
         firstName: firstName || '',
         lastName: lastName || '',
         avatar: 'assets/images/default.png',
@@ -64,6 +64,7 @@ exports.index = function(req, res) {
         },
         linesPerMinute: 0.0,
         linesLastUpdated: Date.now(),
+        team: '',
         admin: true
        };
        // Check to see if the user id exists (should not because its uuid generated).

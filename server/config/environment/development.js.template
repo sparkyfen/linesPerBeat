@@ -7,7 +7,8 @@ module.exports = {
   couchdb: {
     url: 'http://localhost:5984',
     users: 'linesperbeat-user',
-    childProcesses: 'linesperbeat-childprocesses'
+    childProcesses: 'linesperbeat-childprocesses',
+    teams: 'linesperbeat-teams'
   },
   crypto: {
     salt: '' // 64+ character string.

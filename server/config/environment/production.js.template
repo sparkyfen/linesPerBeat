@@ -16,7 +16,8 @@ module.exports = {
     url: process.env.HEROKU_COUCHDB_URL ||
               'http://localhost:5984',
     users: 'linesperbeat-user',
-    childProcesses: 'linesperbeat-childprocesses'
+    childProcesses: 'linesperbeat-childprocesses',
+    teams: 'linesperbeat-teams'
   },
   crypto: {
     salt: process.env.HEROKU_CRYPTO_SALT ||

@@ -23,6 +23,7 @@ var users = db.getUsersTable();
  *   The callback function to send the data back with.
  */
 function _uploadImage(imageURL, callback) {
+  // Let Imgur take care of whether or not the file is an image or not.
   imgur.upload(imageURL, function (error, reply) {
     if(error) {
       return callback(error);

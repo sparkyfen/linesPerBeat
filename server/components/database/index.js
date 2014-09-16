@@ -26,11 +26,14 @@ exports.initialize = function(type) {
     case COUCHDB:
     this.nano = require('nano')(settings.couchdb.url);
     this.users = this.nano.use(settings.couchdb.users);
+    this.teams = this.nano.use(settings.couchdb.teams);
     this.childProcesses = this.nano.use(settings.couchdb.childProcesses);
     break;
     case DYNAMODB:
     // TODO Add Dyanmo initialization.
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -46,6 +49,8 @@ exports.createDB = function(dbName, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -61,6 +66,42 @@ exports.compactUserDB = function(callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.compactTeamDB = function(callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.nano.db.compact(settings.couchdb.teams, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.compactProcessDB = function(callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.nano.db.compact(settings.couchdb.childProcesses, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -76,6 +117,8 @@ exports.insert = function(db, key, data, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -85,6 +128,8 @@ exports.getUsersTable = function() {
     return this.users;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -94,6 +139,19 @@ exports.getChildTable = function () {
     return this.childProcesses;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.getTeamsTable = function () {
+  switch(this.type) {
+    case COUCHDB:
+    return this.teams;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -109,6 +167,8 @@ exports.peekForUser = function(userId, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -124,6 +184,8 @@ exports.getUser = function(userId, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -139,6 +201,93 @@ exports.searchByUser = function(username, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.searchByUserId = function(userId, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.users.view('users', 'by_id', {reduce: false, startkey: userId, endkey: userId}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.searchByMultipleUserIds = function(userIds, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.users.view('users', 'by_id', {reduce: false, keys: userIds}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.searchByTeamName = function (teamName, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.teams.view('teams', 'by_name', {reduce: false, startkey: teamName, endkey: teamName}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.searchByTeamId = function (teamId, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.teams.view('teams', 'by_id', {reduce: false, startkey: teamId, endkey: teamId}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.searchTeamByAll = function(callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.teams.view('teams', 'all', {reduce: false}, function (error, reply) {
+      if (error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -154,6 +303,8 @@ exports.searchUserByAll = function(callback) {
     break;
     case DYNAMODB:
     throw new Error('Dynamo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -164,6 +315,9 @@ exports.deleteUserByUsername = function(username, callback) {
     _self.users.view('users', 'by_username', {reduce: false, startkey: username, endkey: username}, function (error, reply) {
       if(error) {
         return callback(error);
+      }
+      if(reply.rows.length === 0) {
+        return callback('User does not exist.');
       }
       var user = reply.rows[0].value;
       console.log('Deleting user from DB.');
@@ -179,8 +333,86 @@ exports.deleteUserByUsername = function(username, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
+
+exports.deleteUserFromTeam = function(teamName, username, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    var _self = this;
+    _self.users.view('users', 'by_username', {reduce: false, startkey: username, endkey: username}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      if(reply.rows.length === 0) {
+        return callback('User does not exist.');
+      }
+      var user = reply.rows[0].value;
+      _self.teams.view('teams', 'by_name', {reduce: false, startkey: teamName, endkey: teamName}, function (error, reply) {
+        if(error) {
+          return callback(error);
+        }
+        if(reply.rows.length === 0) {
+          return callback('Team does not exist.');
+        }
+        var team = reply.rows[0].value;
+        var deleted = false;
+        for(var i = 0; i < team.users.length; i++) {
+          var teamUser = team.users[i];
+          if(teamUser === user._id) {
+            team.users.splice(i, 1);
+            deleted = true;
+          }
+        }
+        if(!deleted) {
+          return callback('User was not in the team, could not delete.');
+        }
+        _self.teams.insert(team, team._id, function (error) {
+          if(error) {
+            return callback(error);
+          }
+          return callback(null);
+        });
+      });
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.deleteTeamByName = function(teamName, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    var _self = this;
+    _self.teams.view('teams', 'by_name', {reduce: false, startkey: teamName, endkey: teamName}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      if(reply.rows.length === 0) {
+        return callback('Team does not exist.');
+      }
+      var team = reply.rows[0].value;
+      console.log('Deleting team from DB.');
+      console.log(team);
+      _self.teams.destroy(team._id, team._rev, function (error, body) {
+        if(error) {
+          return callback(error);
+        }
+        return callback(null, body);
+      });
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+}
 
 exports.searchProcessByAll = function(callback) {
   switch(this.type) {
@@ -194,6 +426,8 @@ exports.searchProcessByAll = function(callback) {
     break;
     case DYNAMODB:
     throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -218,6 +452,8 @@ exports.deleteProcessByPid = function(pid, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -233,6 +469,25 @@ exports.deleteAllUsers = function(docs, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
+  }
+};
+
+exports.deleteAllTeams = function(docs, callback) {
+  switch(this.type) {
+    case COUCHDB:
+    this.teams.bulk({docs: docs}, function (error, reply) {
+      if(error) {
+        return callback(error);
+      }
+      return callback(null, reply);
+    });
+    break;
+    case DYNAMODB:
+    throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };
 
@@ -248,5 +503,7 @@ exports.deleteAllProcesses = function(docs, callback) {
     break;
     case DYNAMODB:
     throw new Error('Dyanmo DB has not been implemented yet.');
+    default:
+    throw new Error('Only couchdb and dynamodb are allowed.');
   }
 };

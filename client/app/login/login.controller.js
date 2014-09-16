@@ -8,7 +8,6 @@ angular.module('linesPerBeatApp')
       password: $scope.password
     };
     Userservice.login(loginData).success(function (loginResp) {
-      $window.localStorage.setItem('user', $scope.username);
       $materialToast({
         controller: 'ToastCtrl',
         templateUrl: 'components/toast/toast.html',
@@ -18,7 +17,7 @@ angular.module('linesPerBeatApp')
           message: loginResp.message
        }
       });
-      $rootScope.$broadcast('loggedIn', {user: $scope.username});
+      $rootScope.$broadcast('loggedIn', {user: $scope.username, admin: loginResp.admin});
     }).error(function (error) {
       $materialToast({
         controller: 'ToastCtrl',

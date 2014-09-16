@@ -38,8 +38,10 @@ exports.index = function(req, res) {
       req.session.username = username;
       if(user.admin) {
         req.session.isAdmin = true;
+        return res.json({message: 'Logged in.', admin: true});
       }
-      return res.json({message: 'Logged in.'});
+      req.session.isAdmin = false;
+      return res.json({message: 'Logged in.', admin: false});
     });
   });
 };

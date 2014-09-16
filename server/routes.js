@@ -14,6 +14,8 @@ module.exports = function(app) {
   app.use('/api/admin/deleteAccount', require('./api/admin/deleteAccount'));
   app.use('/api/admin/checkCookie', require('./api/admin/checkCookie'));
   app.use('/api/admin/register', require('./api/admin/register'));
+  app.use('/api/admin/deleteTeam', require('./api/admin/deleteTeam'));
+  app.use('/api/admin/deleteMember', require('./api/admin/deleteMember'));
 
   app.use('/api/user/uploadAvatar', require('./api/uploadAvatar'));
   app.use('/api/user/checkCookie', require('./api/checkCookie'));
@@ -29,6 +31,9 @@ module.exports = function(app) {
   app.use('/api/user/login', require('./api/login'));
 
   app.use('/api/team/getTeams', require('./api/team/getTeams'));
+  app.use('/api/team/addTeam', require('./api/team/addTeam'));
+  app.use('/api/team/addMember', require('./api/team/addMember'));
+  app.use('/api/team/getMembers', require('./api/team/getMembers'));
 
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')

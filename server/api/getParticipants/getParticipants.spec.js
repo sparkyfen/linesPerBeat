@@ -82,7 +82,7 @@ describe('GET /api/user/getParticipants', function() {
     });
   });
 
-  it('should respond with the list of particpants', function(done) {
+  it('should respond with the list of participants', function(done) {
     request(app)
     .get('/api/user/getParticipants')
     .expect(200)
